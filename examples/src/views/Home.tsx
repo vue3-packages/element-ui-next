@@ -10,7 +10,7 @@ export default defineComponent({
       <>
         <h1>Home</h1>
         <h1>{store.state.title}</h1>
-        <ElButton></ElButton>
+        <ElButton>123</ElButton>
       </>
     );
   }
