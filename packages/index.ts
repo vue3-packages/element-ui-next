@@ -1,7 +1,8 @@
 import { App, Plugin } from "vue";
 import ElButton from "./button/index";
+import ElButtonGroup from "./buttonGroup/index";
 
-const components = [ElButton];
+const components = [ElButton, ElButtonGroup];
 
 const install = function (Vue: App): void {
   components.forEach((component) => {
@@ -15,4 +16,4 @@ const elementUiNext: Plugin = {
 
 export default elementUiNext;
 
-export { ElButton };
+export { ElButton, ElButtonGroup };
