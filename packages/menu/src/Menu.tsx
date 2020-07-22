@@ -1,4 +1,4 @@
-import {defineComponent, PropType, computed, reactive, watch, onMounted} from "vue"
+import {defineComponent, PropType, computed, watch, onMounted, reactive} from "vue"
 import {useEventBus, useMenu} from "./menuHooks"
 
 const Menu = defineComponent({
@@ -37,37 +37,37 @@ const Menu = defineComponent({
       type: Function
     }
   },
-  setup(props, {emit, slots}) {
+  setup(props, {slots}) {
     const eventBus = useEventBus()
-    const {
-      items
-    } = useMenu("menu")
+    let state = useMenu()
+
     onMounted(() => {
+      slots.default && state.initItems(slots.default())
+      state.setRootMenu({
+        ...props,
+        openedMenus: (props.defaultOpeneds && !props.collapse) ? props.defaultOpeneds.slice(0) : [],
+        activeIndex: props.defaultActive
+      })
       initOpenedMenu()
       eventBus.on("item-click", handleItemClick)
       eventBus.on("submenu-click", handleSubmenuClick)
     })
 
-    const data = reactive({
-      activeIndex: props.defaultActive,
-      openedMenus: (props.defaultOpeneds && !props.collapse) ? props.defaultOpeneds.slice(0) : [],
-      submenus: {}
-    })
     const handleItemClick = (item) => {
       const { index, indexPath } = item;
       const hasIndex = item.index !== null;
 
       if (hasIndex) {
-        data.activeIndex = item.index;
+        state.rootMenu.activeIndex = item.index;
       }
       props.select?.(index, indexPath, item)
       if (props.mode === "horizontal" || props.collapse) {
-        data.openedMenus = [];
+        state.rootMenu.openedMenus = [];
       }
     }
     const handleSubmenuClick = (submenu) => {
       const { index, indexPath } = submenu;
-      let isOpened = data.openedMenus.indexOf(index) !== -1;
+      let isOpened = state.rootMenu.openedMenus.indexOf(index) !== -1;
 
       if (isOpened) {
         closeMenu(index);
@@ -79,26 +79,26 @@ const Menu = defineComponent({
     }
     
     const closeMenu = (index) => {
-      const i = data.openedMenus.indexOf(index);
+      const i = state.rootMenu.openedMenus.indexOf(index);
       if (i !== -1) {
-        data.openedMenus.splice(i, 1);
+        state.rootMenu.openedMenus.splice(i, 1);
       }
     }
     const openMenu = (index, indexPath) => {
-      let openedMenus = data.openedMenus;
+      let openedMenus = state.rootMenu.openedMenus;
       if (openedMenus.indexOf(index) !== -1) return;
       // 将不在该菜单路径下的其余菜单收起
       // collapse all menu that are not under current menu item
       if (props.uniqueOpened) {
-        data.openedMenus = openedMenus.filter(index => {
+        state.rootMenu.openedMenus = openedMenus.filter(index => {
           return indexPath.indexOf(index) !== -1;
         });
       }
-      data.openedMenus.push(index);
+      state.rootMenu.openedMenus.push(index);
     }
     const initOpenedMenu = () => {
-      const index = data.activeIndex;
-      const activeItem = items[index];
+      const index = state.rootMenu.activeIndex;
+      const activeItem = state.items[index || ""];
       if (!activeItem || props.mode === "horizontal" || props.collapse) return;
 
       let indexPath = activeItem.indexPath;
@@ -106,34 +106,34 @@ const Menu = defineComponent({
       // 展开该菜单项的路径上所有子菜单
       // expand all submenus of the menu item
       indexPath.forEach(index => {
-        let submenu = data.submenus[index];
+        let submenu = state.submenus[index];
         submenu && openMenu(index, submenu.indexPath);
       });
     }
     const updateActiveIndex = (val: string) => {
-      const item = items[val] || items[data.activeIndex] || items[props.defaultActive];
+      const item = state.items[val] || state.items[state.rootMenu.activeIndex || ""] || state.items[props.defaultActive];
       if (item) {
-        data.activeIndex = item.index;
+        state.rootMenu.activeIndex = item.index;
         initOpenedMenu();
       } else {
-        data.activeIndex = "";
+        state.rootMenu.activeIndex = "";
       }
     }
     watch(() => props.defaultActive, (value) => {
-      if(!items[value]){
-        data.activeIndex = ""
+      if(!state.items[value]){
+        state.rootMenu.activeIndex = ""
       }
       updateActiveIndex(value)
     })
 
     watch(() => props.defaultOpeneds, (value) => {
       if (!props.collapse && value) {
-        data.openedMenus = value;
+        state.rootMenu.openedMenus = value;
       }
     })
 
     watch(() => props.collapse, (value) => {
-      if (value) data.openedMenus = [];
+      if (value) state.rootMenu.openedMenus = [];
       // broadcast('ElSubmenu', 'toggle-collapse', value);
     })
 

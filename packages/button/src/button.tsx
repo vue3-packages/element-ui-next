@@ -5,13 +5,13 @@ const Button = defineComponent({
   name: "ElButton",
   props: {
     type: {
-      type: String as PropType<"medium" | "small" | "mini">,
+      type: String as PropType<
+      "primary" | "success" | "warning" | "danger" | "info" | "text"
+    >,
       default: "default"
     },
     size: {
-      type: String as PropType<
-        "primary" | "success" | "warning" | "danger" | "info" | "text"
-      >,
+      type: String as PropType<"medium" | "small" | "mini">,
       default: ""
     },
     icon: { type: String, default: "" },
