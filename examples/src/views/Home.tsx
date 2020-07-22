@@ -1,16 +1,25 @@
 import { defineComponent } from "vue";
-import { useStore } from "vuex";
+import {ElContainer, ElMain, ElHeader, ElAside} from "../../../packages/index"
+import CHeader from "../components/layout/cHeader"
+import CAside from "../components/layout/cAside"
+
+import "./Home.scss"
 
 export default defineComponent({
   name: "App",
   setup() {
-    const store = useStore()
     return () => (
-      <>
-        <h1>Home</h1>
-        <h1>{store.state.title}</h1>
-        <i class="el-icon-eleme"></i>
-      </>
+      <ElContainer class="element-ui-next">
+        <ElHeader height="80px">
+          <CHeader/>
+        </ElHeader>
+        <ElContainer>
+          <ElAside width="400px">
+            <CAside/>
+          </ElAside>
+          <ElMain>Main</ElMain>
+        </ElContainer>
+      </ElContainer>
     );
   }
 });
