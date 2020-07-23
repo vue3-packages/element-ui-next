@@ -106,6 +106,7 @@ const Menu = defineComponent({
       if (hasIndex) {
         state.rootMenu.activeIndex = item.index;
       }
+      state.setActive(item);
       props.select?.(index, indexPath, item)
       if (props.mode === "horizontal" || props.collapse) {
         state.rootMenu.openedMenus = [];

@@ -1,5 +1,5 @@
 import {defineComponent, ref} from "vue"
-import {ElMenu, ElMenuItem, ElSubMenu} from "../../../../packages/index"
+import {ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup} from "../../../../packages/index"
 import "./cHeader.scss"
 
 const CHeader = defineComponent({
@@ -23,18 +23,26 @@ const CHeader = defineComponent({
           <ElSubMenu slots={{
             title: () => (
               <>
-                <i class="el-icon-location"></i>
-                <span>我的工作台</span>
+              <i class="el-icon-location"></i>
+              <span>我的工作台</span>
               </>
             )
           }} index="2">
-            <ElMenuItem index="2-1">选项1</ElMenuItem>
-            <ElMenuItem index="2-2">选项2</ElMenuItem>
+            <ElMenuItemGroup slots={{
+              title: () => "分组1"
+            }}>
+              <ElMenuItem index="2-1">选项1</ElMenuItem>
+              <ElMenuItem index="2-2">选项2</ElMenuItem>
+            </ElMenuItemGroup>
             <ElMenuItem index="2-3">选项3</ElMenuItem>
             <ElSubMenu slots={{
               title: () => ("选项4")
             }} index="2-4">
-              <ElMenuItem index="2-4-1">选项1</ElMenuItem>
+              <ElMenuItemGroup slots={{
+                title: () => "分组2"
+              }}>
+                <ElMenuItem index="2-4-1">选项1</ElMenuItem>
+              </ElMenuItemGroup>
               <ElMenuItem index="2-4-2">选项2</ElMenuItem>
               <ElMenuItem index="2-4-3">选项3</ElMenuItem>
             </ElSubMenu>

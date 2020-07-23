@@ -233,3 +233,35 @@ export const isInContainer = (el, container): boolean => {
     elRect.left < containerRect.right
   );
 };
+
+export function normalizeClass(value: unknown): string {
+  let res = "";
+  if (typeof value === "string") {
+    res = value;
+  } else if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      res += normalizeClass(value[i]) + " ";
+    }
+  } else if (value !== null && typeof value === "object") {
+    for (const name in value) {
+      if ((value as Record<string, boolean>)[name]) {
+        res += name + " ";
+      }
+    }
+  }
+  return res.trim();
+}
+
+export function createEl(id: string, cls?: string): HTMLElement {
+  const el = document.createElement("div");
+  el.id = id;
+  if (cls) {
+    el.className = cls;
+  }
+  document.body.appendChild(el);
+  return el;
+}
+
+export function removeEl(el: Element): void {
+  if (el.parentNode) el.parentNode.removeChild(el);
+}

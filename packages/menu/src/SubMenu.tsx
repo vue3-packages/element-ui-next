@@ -1,6 +1,7 @@
 import {defineComponent, computed, reactive, ref, onMounted, onBeforeMount, Transition, inject} from "vue"
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import CollapseTransition from "../../Transition/CollapseTransition"
+import ElPopper from "../../popper/index"
 import useRender from "../../../src/hooks/renderHooks"
 
 const ElSubMenu = defineComponent({
@@ -65,18 +66,13 @@ const ElSubMenu = defineComponent({
       let isActive = false;
       const _submenus = state.submenus;
       const _items = state.items;
+      if (_items[props.index]?.active) {
+        isActive = true;
+      }
 
-      Object.keys(_items).forEach(index => {
-        if (_items[index].active) {
-          isActive = true;
-        }
-      });
-
-      Object.keys(_submenus).forEach(index => {
-        if (_submenus[index].active) {
-          isActive = true;
-        }
-      });
+      if (_submenus[props.index]?.active) {
+        isActive = true;
+      }
 
       return isActive;
     },)
@@ -178,10 +174,12 @@ const ElSubMenu = defineComponent({
       
     }
 
-    const submenuTitleIcon = (
-      state.rootMenu.mode === "horizontal" ||
-      state.rootMenu.mode === "vertical" && !state.rootMenu.collapse
-    ) ? "el-icon-arrow-down" : "el-icon-arrow-right";
+    const submenuTitleIcon = computed(() => {
+      return (
+        state.rootMenu.mode === "horizontal" && isFirstLevel.value ||
+        state.rootMenu.mode === "vertical" && !state.rootMenu.collapse
+      ) ? "el-icon-arrow-down" : "el-icon-arrow-right postion_ab"
+    })
     
     
     const menu = ref(null)
@@ -190,7 +188,7 @@ const ElSubMenu = defineComponent({
     let popperElm: HTMLElement | undefined = undefined
     const isFirstLevel = computed(() => {
       let isFirstLevel = true;
-      let parent = (root.value as unknown as HTMLElement).parentElement;
+      let parent = (root.value as unknown as HTMLElement)?.parentElement;
       while (parent && parent.attributes["data-component"]?.nodeValue !== "ElMenu") {
         if (["ElSubmenu", "ElMenuItemGroup"].indexOf(parent.attributes["data-component"]?.nodeValue) > -1) {
           isFirstLevel = false;
@@ -255,25 +253,28 @@ const ElSubMenu = defineComponent({
           }}
         >
           {props.slots?.title?.()}
-          <i class={[ "el-submenu__icon-arrow", submenuTitleIcon ]}></i>
+          <i class={[ "el-submenu__icon-arrow", submenuTitleIcon.value ]}></i>
         </div>
         {isMenuPopup.value ? (
             opened.value ? (
-              <Transition name={menuTransitionName.value}>
-                <div
-                  ref={menu}
-                  class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
-                  on-mouseenter={($event) => handleMouseenter($event, 100)}
-                  on-mouseleave={() => handleMouseleave(true)}
-                  on-focus={($event) => handleMouseenter($event, 100)}>
-                  <ul
-                    role="menu"
-                    class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
-                    style={{ backgroundColor: state.rootMenu.backgroundColor || "" }}>
-                    {slots.default?.()}
-                  </ul>
-                </div>
-              </Transition>
+              <ElPopper
+              placement={currentPlacement.value}>
+                <Transition name={menuTransitionName.value}>
+                  <div
+                    ref={menu}
+                    class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
+                    on-mouseenter={($event) => handleMouseenter($event, 100)}
+                    on-mouseleave={() => handleMouseleave(true)}
+                    on-focus={($event) => handleMouseenter($event, 100)}>
+                    <ul
+                      role="menu"
+                      class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
+                      style={{ backgroundColor: state.rootMenu.backgroundColor || "" }}>
+                      {slots.default?.()}
+                    </ul>
+                  </div>
+                </Transition>
+              </ElPopper>
             ) : (<div></div>)
         ) : (
           <CollapseTransition name={menuTransitionName.value}>

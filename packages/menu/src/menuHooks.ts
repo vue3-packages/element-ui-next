@@ -1,18 +1,35 @@
 import { IEventBus, EventBus } from "../../../src/tools/eventBus";
-import { VNode, VNodeNormalizedChildren, reactive, computed, ComputedRef, Ref } from "vue";
+import {
+  VNode,
+  VNodeNormalizedChildren,
+  reactive,
+  computed,
+  ComputedRef,
+  Ref,
+  VNodeTypes,
+} from "vue";
+
+type VNodeTypesN = VNodeTypes & { name: string };
 
 interface IItem {
-  [key: string]: any;
+  active: boolean;
+  index: string;
+  indexPath: string[];
+}
+
+interface IItems {
+  [key: string]: IItem;
 }
 
 interface MenuHooks {
-  items: IItem;
-  submenus: IItem;
+  items: IItems;
+  submenus: IItems;
   addItem: (index: string) => void;
   rootMenu: IRootMenu;
   initItems: (slots: VNode[], indexPath?: string[]) => void;
   setRootMenu: (rootConfig: IRootMenu) => void;
   eventBus: IEventBus;
+  setActive: (item: IItem) => void;
 }
 
 interface IRootMenu {
@@ -36,8 +53,8 @@ interface IPaddingStyle {
 }
 
 function useMenu(): MenuHooks {
-  const items: IItem = {};
-  const submenus: IItem = {};
+  const items: IItems = {};
+  const submenus: IItems = {};
   const rootMenu: IRootMenu = {
     mode: "vertical",
     defaultActive: "",
@@ -63,6 +80,7 @@ function useMenu(): MenuHooks {
     setRootMenu,
     submenus,
     eventBus,
+    setActive,
   });
 
   /**
@@ -76,16 +94,19 @@ function useMenu(): MenuHooks {
         if (item instanceof Object && !(item instanceof Array)) {
           const _indexPath = (indexPath || []).concat([item?.props?.index]);
           if (item?.props?.index) {
-            state.items[item?.props?.index] = {
-              index: item?.props?.index,
-              indexPath: _indexPath,
-              active: false,
-            };
-            state.submenus[item?.props?.index] = {
-              index: item?.props?.index,
-              indexPath: _indexPath,
-              active: false,
-            };
+            if ((item.type as VNodeTypesN).name === "ElMenuItem") {
+              state.items[item?.props?.index] = {
+                index: item?.props?.index,
+                indexPath: _indexPath,
+                active: false,
+              };
+            } else if ((item.type as VNodeTypesN).name === "ElSubMenu") {
+              state.submenus[item?.props?.index] = {
+                index: item?.props?.index,
+                indexPath: _indexPath,
+                active: false,
+              };
+            }
           }
           if (item?.children && item?.children instanceof Array) {
             initItems(item?.children, _indexPath);
@@ -101,6 +122,18 @@ function useMenu(): MenuHooks {
   }
   function setRootMenu(rootConfig: IRootMenu): void {
     state.rootMenu = rootConfig;
+  }
+  function setActive(item: IItem): void {
+    Object.keys(state.items).forEach((index) => {
+      state.items[index].active = false;
+    });
+    Object.keys(state.submenus).forEach((index) => {
+      state.submenus[index].active = false;
+    });
+    for (const index of item.indexPath) {
+      if (state.items[index]) state.items[index].active = true;
+      else if (state.submenus[index]) state.submenus[index].active = true;
+    }
   }
 
   return state;

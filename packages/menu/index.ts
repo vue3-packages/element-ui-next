@@ -1,9 +1,10 @@
 import ElMenu from "./src/Menu";
 import ElMenuItem from "./src/MenuItem";
 import ElSubMenu from "./src/SubMenu";
+import ElMenuItemGroup from "./src/MenuItemGroup";
 import { App, Plugin } from "vue";
 
-const components = [ElMenu, ElMenuItem, ElSubMenu];
+const components = [ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup];
 
 const menuInstall: Plugin = {
   install: (app: App) => {
@@ -15,4 +16,4 @@ const menuInstall: Plugin = {
 
 export default menuInstall;
 
-export { ElMenu, ElMenuItem, ElSubMenu };
+export { ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup };
