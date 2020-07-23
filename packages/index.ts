@@ -8,6 +8,7 @@ import ElHeader from "./header/index";
 import ElIcon from "./icon/index";
 import ElMain from "./main/index";
 import ELAvatar from "./avatar/index";
+import ELlink from "./link/index";
 
 import { ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup } from "./menu/index";
 
@@ -25,6 +26,7 @@ const components = [
   ElSubMenu,
   ELAvatar,
   ElMenuItemGroup,
+  ELlink,
 ];
 
 const install = function (Vue: App): void {
@@ -53,4 +55,5 @@ export {
   ElSubMenu,
   ELAvatar,
   ElMenuItemGroup,
+  ELlink,
 };
