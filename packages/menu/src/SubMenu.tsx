@@ -1,12 +1,10 @@
-import {defineComponent, computed, reactive, watch} from "vue"
-import {useEventBus, useMenu, usePaddingStyle} from "./menuHooks"
-import ElCollapseTransition from "../../../src/transitions/collapse-transition";
+import {defineComponent, computed, reactive, ref, onMounted, onBeforeMount, Transition, inject} from "vue"
+import {usePaddingStyle, MenuHooks} from "./menuHooks"
+import CollapseTransition from "../../Transition/CollapseTransition"
+import useRender from "../../../src/hooks/renderHooks"
 
 const ElSubMenu = defineComponent({
   name: "ElSubMenu",
-  components: {
-    ElCollapseTransition
-  },
   props: {
     index: {
       type: String,
@@ -31,10 +29,10 @@ const ElSubMenu = defineComponent({
     }
   },
   setup (props, {slots}) {
-    const eventBus = useEventBus()
-    const style = usePaddingStyle()
-
-    const state = useMenu()
+    const root = ref(null)
+    let state = inject("menuConfig") as MenuHooks
+    let {render} = useRender()
+    let style = usePaddingStyle(root, state)
 
     const data = reactive({
       popperJS: null,
@@ -42,17 +40,18 @@ const ElSubMenu = defineComponent({
       mouseInChild: false
     })
 
+    onMounted(() => {
+      style = usePaddingStyle(root, state)
+    })
+
     const opened = computed(() => {
       return state.rootMenu?.openedMenus?.indexOf(props.index) > -1;
     })
 
     const isMenuPopup = computed(() => {
-      return false
+      return state.rootMenu.mode === "horizontal" || (state.rootMenu.mode === "vertical" && state.rootMenu.collapse);
     })
 
-    const mode = computed(() => {
-      return false
-    })
     const activeTextColor = computed(() => {
       return state.rootMenu.activeTextColor || "";
     })
@@ -88,26 +87,77 @@ const ElSubMenu = defineComponent({
         };
       }
       return {
-        borderBottomColor: active
+        borderBottomColor: active.value
           ? (state.rootMenu.activeTextColor ? activeTextColor.value : "")
           : "transparent",
-        color: active
+        color: active.value
           ? activeTextColor.value
           : textColor.value
       };
     })
 
     const menuTransitionName = computed(() => {
-      return "el-zoom-in-left";
+      return state.rootMenu.collapse ? "el-zoom-in-left" : "el-zoom-in-top";
     })
 
-    const handleMouseenter = (e?: FocusEvent, num?: number) => {
+    let timeout: number | undefined = undefined
+    const appendToBody = computed(() => {
+      return props.popperAppendToBody === undefined
+        ? isFirstLevel
+        : props.popperAppendToBody;
+    })
+    const mouseInChild = ref(false)
+    state.eventBus.on("mouse-enter-child", () => {
+      mouseInChild.value = true
+      clearTimeout(timeout);
+    })
+    state.eventBus.on("mouse-leave-child", () => {
+      mouseInChild.value = false
+      clearTimeout(timeout);
+    })
+    const handleMouseenter = (event: FocusEvent, num?: number) => {
+      if (!("ActiveXObject" in window) && event.type === "focus" && !event.relatedTarget) {
+        return;
+      }
+      if (
+        (state.rootMenu.menuTrigger === "click" && state.rootMenu.mode === "horizontal") ||
+        (!state.rootMenu.collapse && state.rootMenu.mode === "vertical") ||
+        props.disabled
+      ) {
+        return;
+      }
+      state.eventBus.emit("mouse-enter-child")
+      timeout && clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        state.eventBus.emit("openMenu", props.index, state.items[props.index].indexPath)
+      }, props.showTimeout);
 
+      if (appendToBody.value) {
+        (root.value as unknown as HTMLElement)?.parentElement?.dispatchEvent(new MouseEvent("mouseenter"));
+      }
+    }
+    const handleMouseleave = (deepDispatch?: boolean) => {
+      if (
+        (state.rootMenu.menuTrigger === "click" && state.rootMenu.mode === "horizontal") ||
+        (!state.rootMenu.collapse && state.rootMenu.mode === "vertical")
+      ) {
+        return;
+      }
+      state.eventBus.emit("mouse-leave-child")
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (!mouseInChild.value) {
+          state.eventBus.emit("closeMenu", props.index)
+        }
+      }, props.hideTimeout);
+
+      // if (appendToBody && deepDispatch) {
+      //   if (this.$parent.$options.name === "ElSubmenu") {
+      //     this.$parent.handleMouseleave(true);
+      //   }
+      // }
     }
 
-    const handleMouseleave = (flag?: boolean) => {
-
-    }
 
     const handleClick = () => {
       if (
@@ -117,24 +167,67 @@ const ElSubMenu = defineComponent({
       ) {
         return;
       }
-      eventBus.emit("submenu-click", state.submenus[props.index])
+      state.eventBus.emit("submenu-click", state.submenus[props.index])
     }
 
     const handleTitleMouseenter = (e?: MouseEvent) => {
-
+      
     }
 
     const handleTitleMouseleave = (e?: MouseEvent) => {
-
+      
     }
 
     const submenuTitleIcon = (
       state.rootMenu.mode === "horizontal" ||
       state.rootMenu.mode === "vertical" && !state.rootMenu.collapse
     ) ? "el-icon-arrow-down" : "el-icon-arrow-right";
-
+    
+    
+    const menu = ref(null)
+    let currentPlacement = ref("bottom-start")
+    let referenceElm = null
+    let popperElm: HTMLElement | undefined = undefined
+    const isFirstLevel = computed(() => {
+      let isFirstLevel = true;
+      let parent = (root.value as unknown as HTMLElement).parentElement;
+      while (parent && parent.attributes["data-component"]?.nodeValue !== "ElMenu") {
+        if (["ElSubmenu", "ElMenuItemGroup"].indexOf(parent.attributes["data-component"]?.nodeValue) > -1) {
+          isFirstLevel = false;
+          break;
+        } else {
+          parent = parent.parentElement;
+        }
+      }
+      return isFirstLevel;
+    })
+    const updatePlacement = () => {
+      currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel
+        ? "bottom-start"
+        : "right-start";
+    }
+    const initPopper = (el: HTMLElement) => {
+      referenceElm = root.value;
+      popperElm = el
+      updatePlacement();
+    }
+    const handleCollapseToggle = (value) => {
+      if (value) {
+        initPopper(menu.value as unknown as HTMLElement);
+      } else {
+        // doDestroy();
+      }
+    }
+    onBeforeMount(() => {
+      state.eventBus.on("toggle-collapse", handleCollapseToggle)
+    })
+    onMounted(() => {
+      initPopper(menu.value as unknown as HTMLElement)
+    })
     return () => (
       <li
+        ref={root}
+        data-component="ElSubmenu"
         class={{
           "el-submenu": true,
           "is-active": active.value,
@@ -149,6 +242,7 @@ const ElSubMenu = defineComponent({
         onFocus={handleMouseenter}
       >
         <div
+          data-render={render.value}
           class="el-submenu__title"
           ref="submenu-title"
           onClick={handleClick}
@@ -164,29 +258,36 @@ const ElSubMenu = defineComponent({
           <i class={[ "el-submenu__icon-arrow", submenuTitleIcon ]}></i>
         </div>
         {isMenuPopup.value ? (
-          <ul
-          role="menu"
-          class="el-menu el-menu--inline"
-          v-show={opened.value}
-          style={{
-            backgroundColor: state.rootMenu.backgroundColor || "",
-            display: opened.value ? "block" : "none"
-          }}
-          >
-          {slots.default?.()}
-        </ul>
+            opened.value ? (
+              <Transition name={menuTransitionName.value}>
+                <div
+                  ref={menu}
+                  class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
+                  on-mouseenter={($event) => handleMouseenter($event, 100)}
+                  on-mouseleave={() => handleMouseleave(true)}
+                  on-focus={($event) => handleMouseenter($event, 100)}>
+                  <ul
+                    role="menu"
+                    class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
+                    style={{ backgroundColor: state.rootMenu.backgroundColor || "" }}>
+                    {slots.default?.()}
+                  </ul>
+                </div>
+              </Transition>
+            ) : (<div></div>)
         ) : (
-          <ul
-            role="menu"
-            class="el-menu el-menu--inline"
-            v-show={opened.value}
-            style={{
-              backgroundColor: state.rootMenu.backgroundColor || "",
-              display: opened.value ? "block" : "none"
-            }}
-            >
-            {slots.default?.()}
-          </ul>
+          <CollapseTransition name={menuTransitionName.value}>
+            {opened.value ? (
+              <ul
+                role="menu"
+                class="el-menu el-menu--inline"
+                style={{
+                  backgroundColor: state.rootMenu.backgroundColor || ""
+                }}
+                >
+                {slots.default?.()}
+              </ul>) : ""}
+          </CollapseTransition>
         )}
       </li>
     )

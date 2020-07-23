@@ -1,5 +1,6 @@
-import {defineComponent, PropType, computed, watch, onMounted, reactive} from "vue"
-import {useEventBus, useMenu} from "./menuHooks"
+import {defineComponent, PropType, watch, onMounted, provide} from "vue";
+import { useMenu } from "./menuHooks";
+
 
 const Menu = defineComponent({
   name: "ElMenu",
@@ -38,20 +39,65 @@ const Menu = defineComponent({
     }
   },
   setup(props, {slots}) {
-    const eventBus = useEventBus()
     let state = useMenu()
+    const menuId = "menuConfig"
+    provide(menuId, state)
+
+    watch(() => state.rootMenu, (val) => {
+      console.log(val)
+    })
 
     onMounted(() => {
       slots.default && state.initItems(slots.default())
       state.setRootMenu({
         ...props,
+        hoverBackground: props.backgroundColor ? mixColor(props.backgroundColor, 0.2) : "",
         openedMenus: (props.defaultOpeneds && !props.collapse) ? props.defaultOpeneds.slice(0) : [],
         activeIndex: props.defaultActive
       })
       initOpenedMenu()
-      eventBus.on("item-click", handleItemClick)
-      eventBus.on("submenu-click", handleSubmenuClick)
+      state.eventBus.on("item-click", handleItemClick)
+      state.eventBus.on("submenu-click", handleSubmenuClick)
+      state.eventBus.on("openMenu", openMenu)
+      state.eventBus.on("closeMenu", closeMenu)
     })
+
+    const getColorChannels = (color: string) => {
+      color = color.replace("#", "");
+      if (/^[0-9a-fA-F]{3}$/.test(color)) {
+        let color_ = color.split("");
+        for (let i = 2; i >= 0; i--) {
+          color_.splice(i, 0, color[i]);
+        }
+        color = color_.join("");
+      }
+      if (/^[0-9a-fA-F]{6}$/.test(color)) {
+        return {
+          red: parseInt(color.slice(0, 2), 16),
+          green: parseInt(color.slice(2, 4), 16),
+          blue: parseInt(color.slice(4, 6), 16)
+        };
+      } else {
+        return {
+          red: 255,
+          green: 255,
+          blue: 255
+        };
+      }
+    }
+    const mixColor = (color: string, percent: number) => {
+      let { red, green, blue } = getColorChannels(color);
+        if (percent > 0) { // shade given color
+          red *= 1 - percent;
+          green *= 1 - percent;
+          blue *= 1 - percent;
+        } else { // tint given color
+          red += (255 - red) * percent;
+          green += (255 - green) * percent;
+          blue += (255 - blue) * percent;
+        }
+        return `rgb(${ Math.round(red) }, ${ Math.round(green) }, ${ Math.round(blue) })`;
+    }
 
     const handleItemClick = (item) => {
       const { index, indexPath } = item;
@@ -125,25 +171,24 @@ const Menu = defineComponent({
       }
       updateActiveIndex(value)
     })
-
     watch(() => props.defaultOpeneds, (value) => {
       if (!props.collapse && value) {
         state.rootMenu.openedMenus = value;
       }
     })
-
     watch(() => props.collapse, (value) => {
       if (value) state.rootMenu.openedMenus = [];
       // broadcast('ElSubmenu', 'toggle-collapse', value);
     })
-
     // watch(() => data.items, (val) => {
     //   updateActiveIndex(val)
     // })
-
+    
     return () => (
       <ul
         role="menubar"
+        data-component="ElMenu"
+        data-menuId={menuId}
         key={ +(props.collapse || 0) }
         style={{ backgroundColor: props.backgroundColor || "" }}
         class={{

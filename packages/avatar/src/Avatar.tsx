@@ -55,7 +55,7 @@ const Avatar = defineComponent({
     })
 
     const sizeStyle = computed(() => {
-      typeof size === 'number' ? {
+      typeof size === "number" ? {
         height: `${size}px`,
         width: `${size}px`,
         lineHeight: `${size}px`

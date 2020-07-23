@@ -5,7 +5,7 @@ import "./cAside.scss"
 const CAside = defineComponent({
   name: "CHeader",
   setup() {
-    const activeIndex = ref("2");
+    const activeIndex = ref("2-1");
     const handleSelect = (key, keyPath) => {
       console.log(key, keyPath);
     }

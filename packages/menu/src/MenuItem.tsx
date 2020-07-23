@@ -1,5 +1,6 @@
-import { defineComponent, computed, ref, onMounted } from "vue";
-import {useEventBus, useMenu, usePaddingStyle, IPaddingStyle} from "./menuHooks"
+import { defineComponent, computed, ref, inject, watch } from "vue";
+import {usePaddingStyle, MenuHooks} from "./menuHooks"
+import useRender from "./../../../src/hooks/renderHooks";
 
 const ElMenuItem = defineComponent({
   name: "ElMenuItem",
@@ -18,20 +19,14 @@ const ElMenuItem = defineComponent({
     }
   },
   setup (props, {slots}) {
-    const eventBus = useEventBus()
-    const state = useMenu()
+    let state = inject("menuConfig") as MenuHooks
+
     const menuItem = ref(null)
-    let style = {
-      paddingStyle: computed(() => {
-        const paddingLeft_: IPaddingStyle = {
-          paddingLeft: "0px"
-        }
-        return paddingLeft_
-      })
-    }
-    onMounted(() => {
-      style = usePaddingStyle(menuItem.value)
+    let style = usePaddingStyle(menuItem, state)
+    watch(() => state.rootMenu, (val) => {
+      style = usePaddingStyle(menuItem, state)
     })
+    let {render} = useRender()
 
     const active = computed(() => {
       return props.index === state.rootMenu.activeIndex;
@@ -58,23 +53,25 @@ const ElMenuItem = defineComponent({
 
     const handleClick = () => {
       if (!props.disabled) {
-        eventBus.emit("item-click", state.items[props.index]);
+        state.eventBus.emit("item-click", state.items[props.index]);
         props.click?.()
       }
     }
     const onMouseEnter = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
-      menuItem?.value.style.backgroundColor = state.rootMenu.backgroundColor;
+      menuItem?.value?.style?.backgroundColor = state.rootMenu.hoverBackground;
     }
     const onMouseLeave = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
-      menuItem?.value.style.backgroundColor = state.rootMenu.backgroundColor;
+      menuItem?.value?.style?.backgroundColor = state.rootMenu.backgroundColor;
     }
     return () => (
       <li
       tabindex={-1}
       ref={menuItem}
       role="menuitem"
+      data-component="ElMenuItem"
+      data-render={render.value}
       class={{
         "el-menu-item": true,
         "is-active": active.value,

@@ -14,7 +14,7 @@ export default defineComponent({
           <CHeader/>
         </ElHeader>
         <ElContainer>
-          <ElAside width="400px">
+          <ElAside style="text-align: left;" width="400px">
             <CAside/>
           </ElAside>
           <ElMain>Main</ElMain>
