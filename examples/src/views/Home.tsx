@@ -1,5 +1,5 @@
 import { defineComponent } from "vue";
-import {ElContainer, ElMain, ElHeader, ElAside} from "../../../packages/index"
+import {ElContainer, ElMain, ElHeader, ElAside, ELAvatar} from "../../../packages/index"
 import CHeader from "../components/layout/cHeader"
 import CAside from "../components/layout/cAside"
 
@@ -17,7 +17,7 @@ export default defineComponent({
           <ElAside width="400px">
             <CAside/>
           </ElAside>
-          <ElMain>Main</ElMain>
+          <ElMain><ELAvatar size="1000" src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png">zzz</ELAvatar></ElMain>
         </ElContainer>
       </ElContainer>
     );

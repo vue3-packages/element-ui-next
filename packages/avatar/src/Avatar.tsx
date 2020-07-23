@@ -1,16 +1,16 @@
-import { inject, computed, defineComponent, PropType } from "vue";
+import { computed, defineComponent, PropType, reactive } from "vue";
 
-const Avatar = defineComponent({
+const ELAvatar = defineComponent({
   name: "ElAvatar",
   props: {
     size: {
       type: [Number, String],
-      validator(val) {
-        if (typeof val === "string") {
-          return ["large", "medium", "small"].includes(val);
-        }
-        return typeof val === "number";
-      }
+      // validator(val) {
+      //   if (typeof val === "string") {
+      //     return ["large", "medium", "small"].includes(val);
+      //   }
+      //   return typeof val === "number";
+      // }
     },
     shape: {
       type: String as PropType<
@@ -24,17 +24,13 @@ const Avatar = defineComponent({
     srcSet: { type: String, default: "" },
     error: Function,
     fit: { type: String, default: "cover" }
+    // fit:  ,
   },
   setup(props, { attrs, slots }) {
-    // const elForm = inject(ElFormSymbol, null)
-    // const elFormItem = inject(ElFormItemSymbol, null)
-    // const elGlobalConfig = useGlobal()
-    // const buttonSize = computed(() => {
-    //   return props.size || elFormItem?.elFormItemSize || elGlobalConfig?.size
-    // })
-    // const buttonDisabled = computed(() => {
-    //   return props.disabled || elForm?.disabled
-    // })
+    const state = reactive({
+      isImageExist: true
+    })
+      
     const { size, icon, shape } = props;
     const avatarClass = computed(() => {
       let classList = ["el-avatar"];
@@ -50,25 +46,46 @@ const Avatar = defineComponent({
       if (shape) {
         classList.push(`el-avatar--${shape}`);
       }
-
       return classList.join(" ");
     })
+    const sizeStyle = typeof size === "number" ? {
+      height: `${size}px`,
+      width: `${size}px`,
+      lineHeight: `${size}px`
+    } : {};
 
-    const sizeStyle = computed(() => {
-      typeof size === 'number' ? {
-        height: `${size}px`,
-        width: `${size}px`,
-        lineHeight: `${size}px`
-      } : {};
-    })
+    const handleError = () => {
+      const { error } = props;
+      const errorFlag = error ? error() : undefined;
+      if (errorFlag !== false) {
+        state.isImageExist = false;
+    }
+    
+  }
+    const renderAvatar = () => {
+    const { icon, src, alt, srcSet, fit } = props;
+    const {isImageExist} = state
+    if (isImageExist && src) {
+      return <img
+        src={src}
+        onError={handleError}
+        alt={alt}
+        srcset={srcSet}
+        style={{ objectFit: fit as "-moz-initial" | "inherit" | "initial" | "revert" | "unset" | "contain" | "cover" | "fill" | "none" | "scale-down" | undefined }}/>;
+    }
+
+    if (icon) {
+      return (<i class={icon} />);
+    }
+    return
+  }
     return () => (
-      <span class={avatarClass} style={sizeStyle}>
-        {
-          this.renderAvatar()
-        }
+      <span class={avatarClass.value} style={sizeStyle}>
+        {renderAvatar()}
+        {slots.default?.()}
       </span>
     );
   }
-});
+})
 
-export default Avatar;
+export default ELAvatar;
