@@ -34,18 +34,14 @@ const ElLink = defineComponent({
         props.disabled && "is-disabled",
         props.underline && !props.disabled && "is-underline"
       ]}
-         href={props.disabled ? null : props.href}
+         href={props.disabled ? undefined : props.href}
          {...attrs}
          onClick={handleClick}
       >
 
         {props.icon && <i class={props.icon}></i>}
         {slots.default && <span class="el-link--inner">{slots.default?.(`name:${props.icon}`)}</span>}
-        <span v-if="$slots.default" class="el-link--inner">
-        <slot></slot>
-       </span>
         {slots.icon && slots.default?.(`name:${props.icon}`)}
-        {/*<template v-if="$slots.icon"><slot v-if="$slots.icon" name="icon"></slot></template>*/}
       </a>
     );
   }
