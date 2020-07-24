@@ -1,21 +1,35 @@
 import { defineComponent, reactive } from "vue";
-import {ElContainer, ElMain, ElHeader, ElAside, ELAvatar, ELlink} from "../../../packages/index"
+import {ElContainer, ElMain, ElHeader, ElAside, ELAvatar, ELlink, ELTag} from "../../../packages/index"
 import CHeader from "../components/layout/cHeader"
 import CAside from "../components/layout/cAside"
 
 import "./Home.scss"
+import ELTag from './../../../packages/tag/index';
+import { type } from './../../../packages/popper/src/usePopper';
+
 
 export default defineComponent({
   name: "App",
   setup() {
     const state = reactive({
       fits: ["fill", "contain", "cover", "none", "scale-down"],
-      url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg"
+      url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      dynamicTags: ['标签四', '标签五', '标签三'],
     })
+  
     const demoAvatar = () => {
       return state.fits.map(e => {
         return <ELAvatar shape="square" fit={e} size={100} src={state.url} style="margin-right: 30px"></ELAvatar>
       })
+    }
+    const demoTag = () => {
+      return state.dynamicTags.map(e => {
+      return <ELTag closable  close={handleClose(e)} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
+      })
+    }
+    const handleClose = (tag) => {
+      console.log(tag,state.dynamicTags)
+      state.dynamicTags.splice(state.dynamicTags.indexOf(tag), 1);
     }
     return () => (
       <ElContainer class="element-ui-next">
@@ -34,6 +48,13 @@ export default defineComponent({
             <ELlink type="warning">警告链接</ELlink>
             <ELlink type="danger">危险链接</ELlink>
             <ELlink type="info">信息链接</ELlink>
+            <div>
+              {/* {demoTag()} */}
+              {state.dynamicTags.map(e => {
+         return <ELTag closable  close={handleClose(e)} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
+      })}
+              <ELTag type="primary">zzz</ELTag>
+            </div>
           </ElMain>
         </ElContainer>
       </ElContainer>

@@ -5,12 +5,6 @@ const ELAvatar = defineComponent({
   props: {
     size: {
       type: [Number, String],
-      // validator(val) {
-      //   if (typeof val === "string") {
-      //     return ["large", "medium", "small"].includes(val);
-      //   }
-      //   return typeof val === "number";
-      // }
     },
     shape: {
       type: String as PropType<
