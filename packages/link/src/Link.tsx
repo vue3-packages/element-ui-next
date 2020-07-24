@@ -1,6 +1,4 @@
 import { defineComponent} from "vue";
-// import { useEventBus } from "../../menu/src/menuHooks";
-// import { ElFormSymbol, ElFormItemSymbol, useGlobal } from "../../provides/index"
 import {EventBus} from "../../../src/tools/eventBus";
 
 const ElLink = defineComponent({
