@@ -96,12 +96,10 @@ const ElSubmenu = defineComponent({
         ? isFirstLevel.value
         : props.popperAppendToBody;
     })
-    const instance = getCurrentInstance()
     const mouseInChild = ref(false)
     state.eventBus.on("mouse-enter-child", () => {
       mouseInChild.value = true
       clearTimeout(timeout);
-      console.log("enter", instance?.vnode.el?.innerText)
     })
     state.eventBus.on("mouse-leave-child", () => {
       mouseInChild.value = false
@@ -250,7 +248,7 @@ const ElSubmenu = defineComponent({
             backgroundColor: backgroundColor.value
           }}
         >
-          {props.slots?.title?.()}
+          {slots.title?.() || props.slots?.title?.()}
           <i class={[ "el-submenu__icon-arrow", submenuTitleIcon.value ]}></i>
         </div>
         {isMenuPopup.value ? (

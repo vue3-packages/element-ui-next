@@ -1,4 +1,4 @@
-import { defineComponent, computed, ref, inject, watch } from "vue";
+import { defineComponent, computed, ref, inject, watch, getCurrentInstance } from "vue";
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import useRender from "./../../../src/hooks/renderHooks";
 
@@ -20,14 +20,14 @@ const ElMenuItem = defineComponent({
   },
   setup (props, {slots}) {
     let state = inject("menuConfig") as MenuHooks
-
+    const instance = getCurrentInstance()
     const menuItem = ref(null)
     let style = usePaddingStyle(menuItem, state)
     watch(() => state.rootMenu, (val) => {
       style = usePaddingStyle(menuItem, state)
     })
     let {render} = useRender()
-
+    
     const active = computed(() => {
       return props.index === state.rootMenu.activeIndex;
     })
@@ -87,8 +87,26 @@ const ElMenuItem = defineComponent({
       onBlur={onMouseLeave}
       onMouseleave={onMouseLeave}
       onClick={handleClick}>
-        {slots.default?.()}
-        {props.slots?.title?.()}
+        {instance?.parent?.type.name === "ElMenu" &&
+          state.rootMenu.collapse &&
+          (slots.title || props.slots?.title) ? "1" : "2"}
+        {
+          (instance?.parent?.type.name === "ElMenu" &&
+          state.rootMenu.collapse &&
+          (slots.title || props.slots?.title))
+          ? (
+            <>
+              {slots.title?.() || props.slots?.title?.()}
+              <div style="position: absolute;left: 0;top: 0;height: 100%;width: 100%;display: inline-block;box-sizing: border-box;padding: 0 20px;">
+                {slots.default?.()}
+              </div>
+            </>
+          )
+          : <>
+            {slots.default?.()}
+            {slots.title?.() || props.slots?.title?.()}
+          </>
+        }
       </li>
     )
   }

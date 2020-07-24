@@ -90,8 +90,9 @@ function useMenu(): MenuHooks {
     if (slots instanceof Array) {
       slots.forEach((item) => {
         if (item instanceof Object && !(item instanceof Array)) {
-          const _indexPath = (indexPath || []).concat([item?.props?.index]);
+          let _indexPath = indexPath || [];
           if (item?.props?.index) {
+            _indexPath = _indexPath.concat([item?.props?.index]);
             if ((item.type as VNodeTypesN).name === "ElMenuItem") {
               state.items[item?.props?.index] = {
                 index: item?.props?.index,

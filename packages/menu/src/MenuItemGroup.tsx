@@ -42,7 +42,7 @@ const ElMenuItemGroup = defineComponent({
       class="el-menu-item-group">
         <div class="el-menu-item-group__title" style={{paddingLeft: levelPadding.value + "px"}}>
           {
-            props.slots?.title ? props.slots?.title() : props.title
+            (slots.title?.() || props.slots?.title?.()) ? (slots.title?.() || props.slots?.title?.()) : props.title
           }
         </div>
         <ul>

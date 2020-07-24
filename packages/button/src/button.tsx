@@ -21,7 +21,7 @@ const Button = defineComponent({
     plain: { type: Boolean },
     autofocus: { type: Boolean },
     round: { type: Boolean },
-    circle: { type: Boolean }
+    circle: { type: Boolean },
   },
   setup(props, { attrs, slots }) {
     const elForm = inject(ElFormSymbol, null)
@@ -36,6 +36,7 @@ const Button = defineComponent({
 
     return () => (
       <button
+        {...attrs}
         disabled={buttonDisabled.value || props.loading}
         autofocus={props.autofocus}
         type={props.nativeType as "button"}

@@ -1,4 +1,5 @@
 import {defineComponent, PropType, watch, onMounted, provide} from "vue";
+import MenuCollapseTransition from "./MenuCollapseTransition"
 import { useMenu } from "./menuHooks";
 
 
@@ -39,23 +40,39 @@ const Menu = defineComponent({
     }
   },
   setup(props, {slots}) {
+
+
     let state = useMenu()
     const menuId = "menuConfig"
     provide(menuId, state)
 
-    onMounted(() => {
+    const initState = () => {
       slots.default && state.initItems(slots.default())
       state.setRootMenu({
         ...props,
         hoverBackground: props.backgroundColor ? mixColor(props.backgroundColor, 0.2) : "",
         openedMenus: (props.defaultOpeneds && !props.collapse) ? props.defaultOpeneds.slice(0) : [],
-        activeIndex: props.defaultActive
+        activeIndex: state.rootMenu.activeIndex || props.defaultActive
       })
       initOpenedMenu()
+    }
+
+    const initEvents = () => {
       state.eventBus.on("item-click", handleItemClick)
       state.eventBus.on("submenu-click", handleSubmenuClick)
       state.eventBus.on("openMenu", openMenu)
       state.eventBus.on("closeMenu", closeMenu)
+    }
+
+    watch(() => props, () => {
+      initState()
+    }, {
+      deep: true
+    })
+
+    onMounted(() => {
+      initState()
+      initEvents()
     })
 
     const getColorChannels = (color: string) => {
@@ -179,13 +196,10 @@ const Menu = defineComponent({
     })
     watch(() => props.collapse, (value) => {
       if (value) state.rootMenu.openedMenus = [];
-      // broadcast('ElSubmenu', 'toggle-collapse', value);
+      state.eventBus.emit("toggle-collapse", value)
     })
-    // watch(() => data.items, (val) => {
-    //   updateActiveIndex(val)
-    // })
-    
-    return () => (
+
+    const menuComponent = (
       <ul
         role="menubar"
         data-component="ElMenu"
@@ -201,6 +215,11 @@ const Menu = defineComponent({
         { slots.default?.() }
       </ul>
     )
+    return props.collapseTransition ? () => (
+      <MenuCollapseTransition>
+        {menuComponent}
+      </MenuCollapseTransition>
+    ) : () => menuComponent
   }
 })
 

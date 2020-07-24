@@ -1,17 +1,21 @@
 import {defineComponent, ref} from "vue"
-import {ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup} from "../../../../packages/index"
+import {ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup, ElButton} from "../../../../packages/index"
 import "./cAside.scss"
 
 const CAside = defineComponent({
   name: "CHeader",
   setup() {
     const activeIndex = ref("2-1");
+    const collapse = ref(false)
     const handleSelect = (key, keyPath) => {
       console.log(key, keyPath);
     }
     return () => (
       <div class="c-aside">
+        <ElButton onClick={() => {collapse.value = false}}>展开</ElButton>
+        <ElButton onClick={() => {collapse.value = true}}>收起</ElButton>
         <ElMenu
+        collapse={collapse.value}
         select={handleSelect}
         defaultActive={activeIndex.value}>
           <ElMenuItem index="1">处理中心</ElMenuItem>
