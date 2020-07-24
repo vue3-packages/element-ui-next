@@ -43,10 +43,6 @@ const Menu = defineComponent({
     const menuId = "menuConfig"
     provide(menuId, state)
 
-    watch(() => state.rootMenu, (val) => {
-      console.log(val)
-    })
-
     onMounted(() => {
       slots.default && state.initItems(slots.default())
       state.setRootMenu({
@@ -115,7 +111,6 @@ const Menu = defineComponent({
     const handleSubmenuClick = (submenu) => {
       const { index, indexPath } = submenu;
       let isOpened = state.rootMenu.openedMenus.indexOf(index) !== -1;
-
       if (isOpened) {
         closeMenu(index);
         props.close?.(index, indexPath);
@@ -126,9 +121,14 @@ const Menu = defineComponent({
     }
     
     const closeMenu = (index) => {
-      const i = state.rootMenu.openedMenus.indexOf(index);
-      if (i !== -1) {
-        state.rootMenu.openedMenus.splice(i, 1);
+      for (let i = 0; i <= state.rootMenu.openedMenus.length - 1; i ++) {
+        const menuIndex = state.rootMenu.openedMenus[i] as string
+        if (
+          state.submenus[menuIndex].indexPath.includes(index)
+        ) {
+          state.rootMenu.openedMenus.splice(i, 1);
+          i --
+        }
       }
     }
     const openMenu = (index, indexPath) => {

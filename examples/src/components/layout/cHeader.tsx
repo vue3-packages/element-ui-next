@@ -1,5 +1,5 @@
 import {defineComponent, ref} from "vue"
-import {ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup} from "../../../../packages/index"
+import {ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup} from "../../../../packages/index"
 import "./cHeader.scss"
 
 const CHeader = defineComponent({
@@ -13,14 +13,14 @@ const CHeader = defineComponent({
       <div class="c-header" style="text-align: left">
         <ElMenu
         mode="horizontal"
-        activeTextColor="#ffd04b"
-        textColor="#fff"
-        backgroundColor="#545c64"
-        menuTrigger="click"
+        // activeTextColor="#ffd04b"
+        // textColor="#fff"
+        // backgroundColor="#545c64"
+        // menuTrigger="click"
         select={handleSelect}
         defaultActive={activeIndex.value}>
           <ElMenuItem index="1">处理中心</ElMenuItem>
-          <ElSubMenu slots={{
+          <ElSubmenu slots={{
             title: () => (
               <>
               <i class="el-icon-location"></i>
@@ -35,7 +35,7 @@ const CHeader = defineComponent({
               <ElMenuItem index="2-2">选项2</ElMenuItem>
             </ElMenuItemGroup>
             <ElMenuItem index="2-3">选项3</ElMenuItem>
-            <ElSubMenu slots={{
+            <ElSubmenu slots={{
               title: () => ("选项4")
             }} index="2-4">
               <ElMenuItemGroup slots={{
@@ -45,8 +45,8 @@ const CHeader = defineComponent({
               </ElMenuItemGroup>
               <ElMenuItem index="2-4-2">选项2</ElMenuItem>
               <ElMenuItem index="2-4-3">选项3</ElMenuItem>
-            </ElSubMenu>
-          </ElSubMenu>
+            </ElSubmenu>
+          </ElSubmenu>
           <ElMenuItem disabled index="3">
             <i class="el-icon-menu"></i>
             消息中心

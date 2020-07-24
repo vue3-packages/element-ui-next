@@ -45,18 +45,19 @@ export function usePopper(
   const popper = ref<Popper>();
   const referenceEl: HTMLElement | null = null;
 
-  const setReferenceEl = (el: HTMLElement) => {
-    if (referenceEl === el) {
+  const setReferenceEl = (el: HTMLElement, popperDom: HTMLElement) => {
+    if (referenceEl === popperDom) {
       return;
     }
     if (popper.value) {
       popper.value.destroy();
     }
-    popper.value = createPopper(el, popperEl, {
+    popper.value = createPopper(el, popperDom as HTMLElement, {
       placement,
       modifiers,
       strategy,
     });
+    popperEl.append(popperDom);
   };
 
   const state = reactive({
@@ -73,8 +74,6 @@ export function usePopper(
   });
   useChildren(popperInject, provideData, (children) => {
     state.childrenVisible = children.some((item) => item.visible);
-    console.log(`${id}:${state.childrenVisible}`);
-    console.log(children);
   });
 
   watchEffect(async () => {

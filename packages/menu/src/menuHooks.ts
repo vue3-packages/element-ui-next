@@ -24,7 +24,6 @@ interface IItems {
 interface MenuHooks {
   items: IItems;
   submenus: IItems;
-  addItem: (index: string) => void;
   rootMenu: IRootMenu;
   initItems: (slots: VNode[], indexPath?: string[]) => void;
   setRootMenu: (rootConfig: IRootMenu) => void;
@@ -74,7 +73,6 @@ function useMenu(): MenuHooks {
 
   const state = reactive({
     items,
-    addItem,
     rootMenu,
     initItems,
     setRootMenu,
@@ -100,7 +98,7 @@ function useMenu(): MenuHooks {
                 indexPath: _indexPath,
                 active: false,
               };
-            } else if ((item.type as VNodeTypesN).name === "ElSubMenu") {
+            } else if ((item.type as VNodeTypesN).name === "ElSubmenu") {
               state.submenus[item?.props?.index] = {
                 index: item?.props?.index,
                 indexPath: _indexPath,
@@ -114,11 +112,6 @@ function useMenu(): MenuHooks {
         }
       });
     }
-  }
-  function addItem(index: string) {
-    state.items.push({
-      index,
-    });
   }
   function setRootMenu(rootConfig: IRootMenu): void {
     state.rootMenu = rootConfig;

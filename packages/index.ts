@@ -10,7 +10,7 @@ import ElMain from "./main/index";
 import ELAvatar from "./avatar/index";
 import ELlink from "./link/index";
 
-import { ElMenu, ElMenuItem, ElSubMenu, ElMenuItemGroup } from "./menu/index";
+import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 
 const components = [
   ElButton,
@@ -23,7 +23,7 @@ const components = [
   ElMain,
   ElMenu,
   ElMenuItem,
-  ElSubMenu,
+  ElSubmenu,
   ELAvatar,
   ElMenuItemGroup,
   ELlink,
@@ -52,7 +52,7 @@ export {
   ElMain,
   ElMenu,
   ElMenuItem,
-  ElSubMenu,
+  ElSubmenu,
   ELAvatar,
   ElMenuItemGroup,
   ELlink,

@@ -1,11 +1,11 @@
-import {defineComponent, computed, reactive, ref, onMounted, onBeforeMount, Transition, inject} from "vue"
+import {defineComponent,getCurrentInstance, computed, ref, onMounted, onBeforeMount, Transition, inject} from "vue"
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import CollapseTransition from "../../Transition/CollapseTransition"
 import ElPopper from "../../popper/index"
 import useRender from "../../../src/hooks/renderHooks"
 
-const ElSubMenu = defineComponent({
-  name: "ElSubMenu",
+const ElSubmenu = defineComponent({
+  name: "ElSubmenu",
   props: {
     index: {
       type: String,
@@ -34,12 +34,6 @@ const ElSubMenu = defineComponent({
     let state = inject("menuConfig") as MenuHooks
     let {render} = useRender()
     let style = usePaddingStyle(root, state)
-
-    const data = reactive({
-      popperJS: null,
-      timeout: null,
-      mouseInChild: false
-    })
 
     onMounted(() => {
       style = usePaddingStyle(root, state)
@@ -99,13 +93,15 @@ const ElSubMenu = defineComponent({
     let timeout: number | undefined = undefined
     const appendToBody = computed(() => {
       return props.popperAppendToBody === undefined
-        ? isFirstLevel
+        ? isFirstLevel.value
         : props.popperAppendToBody;
     })
+    const instance = getCurrentInstance()
     const mouseInChild = ref(false)
     state.eventBus.on("mouse-enter-child", () => {
       mouseInChild.value = true
       clearTimeout(timeout);
+      console.log("enter", instance?.vnode.el?.innerText)
     })
     state.eventBus.on("mouse-leave-child", () => {
       mouseInChild.value = false
@@ -125,7 +121,7 @@ const ElSubMenu = defineComponent({
       state.eventBus.emit("mouse-enter-child")
       timeout && clearTimeout(timeout);
       timeout = setTimeout(() => {
-        state.eventBus.emit("openMenu", props.index, state.items[props.index].indexPath)
+        state.eventBus.emit("openMenu", props.index, state.submenus[props.index].indexPath)
       }, props.showTimeout);
 
       if (appendToBody.value) {
@@ -183,31 +179,33 @@ const ElSubMenu = defineComponent({
     
     
     const menu = ref(null)
-    let currentPlacement = ref("bottom-start")
-    let referenceElm = null
-    let popperElm: HTMLElement | undefined = undefined
     const isFirstLevel = computed(() => {
       let isFirstLevel = true;
-      let parent = (root.value as unknown as HTMLElement)?.parentElement;
-      while (parent && parent.attributes["data-component"]?.nodeValue !== "ElMenu") {
-        if (["ElSubmenu", "ElMenuItemGroup"].indexOf(parent.attributes["data-component"]?.nodeValue) > -1) {
+      const instance = getCurrentInstance()
+      let parent = instance?.parent;
+      while (parent && parent.type.name !== "ElMenu") {
+        if (["ElSubmenu", "ElMenuItemGroup"].indexOf(parent.type.name || "") > -1) {
           isFirstLevel = false;
           break;
         } else {
-          parent = parent.parentElement;
+          parent = parent.parent;
         }
       }
       return isFirstLevel;
     })
-    const updatePlacement = () => {
-      currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel
-        ? "bottom-start"
-        : "right-start";
-    }
+    let currentPlacement = computed(() => {
+      return state.rootMenu.mode === "horizontal" && isFirstLevel.value
+      ? "bottom-start"
+      : "right-start";
+    })
+    // const updatePlacement = () => {
+    //   debugger
+    //   currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel.value
+    //     ? "bottom-start"
+    //     : "right-start";
+    // }
     const initPopper = (el: HTMLElement) => {
-      referenceElm = root.value;
-      popperElm = el
-      updatePlacement();
+      // updatePlacement();
     }
     const handleCollapseToggle = (value) => {
       if (value) {
@@ -263,9 +261,9 @@ const ElSubMenu = defineComponent({
                   <div
                     ref={menu}
                     class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
-                    on-mouseenter={($event) => handleMouseenter($event, 100)}
-                    on-mouseleave={() => handleMouseleave(true)}
-                    on-focus={($event) => handleMouseenter($event, 100)}>
+                    onMouseenter={($event) => handleMouseenter($event, 100)}
+                    onMouseleave={() => handleMouseleave(true)}
+                    onFocus={($event) => handleMouseenter($event, 100)}>
                     <ul
                       role="menu"
                       class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
@@ -295,4 +293,4 @@ const ElSubMenu = defineComponent({
   }
 })
 
-export default ElSubMenu
+export default ElSubmenu

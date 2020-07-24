@@ -29,7 +29,6 @@ const useChildren = <T extends { id: IdType }>(
   watch(
     () => state.children,
     (children) => {
-      console.log(children);
       effect(state.children);
     },
     {

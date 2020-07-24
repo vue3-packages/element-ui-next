@@ -6,18 +6,23 @@ import useClickAway from "../../../src/hooks/useClickAway"
 const PopperInner = defineComponent({
   props: {
     setRootEl: {
-      type: Function as PropType<(el: HTMLElement | null) => void>,
+      type: Function as PropType<(el: HTMLElement | null, popperEl: HTMLElement | null) => void>,
       required: true
     }
   },
   setup({ setRootEl }, { slots }) {
     onMounted(() => {
       const instance = getCurrentInstance()
-      let node = instance!.vnode.el
-      while (node && !node.tagName) {
-        node = node.nextSibling
+      // let node = instance!.vnode.popperEl
+      let popperEl = instance!.vnode.el
+      while (popperEl && !popperEl.tagName) {
+        popperEl = popperEl.nextSibling
       }
-      setRootEl(node as HTMLElement | null)
+      let el = instance!.vnode.el
+      while (el && !el.tagName) {
+        el = el.previousElementSibling
+      }
+      setRootEl(el as HTMLElement | null, popperEl as HTMLElement | null)
     })
     return () => (slots.default ? slots.default() : <span></span>)
   }
@@ -76,35 +81,37 @@ const Popper = defineComponent({
       }
     )
 
-    const setRootEl = (el: HTMLElement | null) => {
+    const setRootEl = (el: HTMLElement | null, popperEl: HTMLElement | null) => {
+      if (!popperEl) {
+        throw new Error("reference popper dom required")
+      }
       if (!el) {
         throw new Error("reference root dom required")
       }
-      setReferenceEl(el)
+      setReferenceEl(el, popperEl)
       if (props.trigger === "click") {
-        el.addEventListener("click", () => {
+        popperEl.addEventListener("click", () => {
           setVisible(!state.visible)
         })
         useClickAway(() => {
           setVisible(false)
-        }, el)
+        }, popperEl)
       } else if (props.trigger === "hover") {
-        el.addEventListener("mouseenter", () => {
+        popperEl.addEventListener("mouseenter", () => {
           setVisible(true)
         })
-        el.addEventListener("mouseleave", () => {
+        popperEl.addEventListener("mouseleave", () => {
           setVisible(false)
         })
       } else if (props.trigger === "focus") {
-        el.addEventListener("focus", () => {
+        popperEl.addEventListener("focus", () => {
           setVisible(true)
         })
-        el.addEventListener("blur", () => {
+        popperEl.addEventListener("blur", () => {
           setVisible(false)
         })
       }
     }
-
     return () => {
       return (
         <>
