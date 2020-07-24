@@ -1,5 +1,4 @@
 import {defineComponent,PropType,Transition} from "vue"
-import {EventBus} from "../../../src/tools/eventBus"
 
 const ELTag = defineComponent({
     name: "ELTag",
@@ -15,25 +14,26 @@ const ELTag = defineComponent({
           type: String as PropType<
           "dark" | "light" | "plain" | "danger" | "info" | "text"
         >,
-        default: 'light',
-        }
+        default: "light",
+        },
+        close: Function as PropType<(event:Event) => void>,
+        click: Function as PropType<(event:Event) => void>,
       },
     setup(props, { attrs, slots }){
-        const eventBus = new EventBus()
         const handleClose = (event) => {
-            event.stopPropagation();
-            eventBus.emit('close', event);
+          event.stopPropagation();
+          props.close?.(event)
         }
         const handleClick = (event) => {
-            eventBus.emit('click', event);
+          props.click?.(event)
         }
         const { type, size, hit, effect, color, closable} = props;
         const classes = [
-        'el-tag',
-        type ? `el-tag--${type}` : '',
-        size ? `el-tag--${size}` : '',
-        effect ? `el-tag--${effect}` : '',
-        hit && 'is-hit'
+        "el-tag",
+        type ? `el-tag--${type}` : "",
+        size ? `el-tag--${size}` : "",
+        effect ? `el-tag--${effect}` : "",
+        hit && "is-hit"
       ];
       const tagEl = (
         <span

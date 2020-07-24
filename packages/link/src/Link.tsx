@@ -14,7 +14,8 @@ const ElLink = defineComponent({
     },
     disabled: Boolean,
     href: String,
-    icon: String
+    icon: String,
+    target: String
   },
   setup(props, { attrs, slots }) {
     const eventBus = new EventBus()
@@ -26,7 +27,7 @@ const ElLink = defineComponent({
       }
     };
     return () => (
-      <a class={[
+      <a target={props.target} class={[
         "el-link",
         props.type ? `el-link--${props.type}` : "",
         props.disabled && "is-disabled",

@@ -4,8 +4,6 @@ import CHeader from "../components/layout/cHeader"
 import CAside from "../components/layout/cAside"
 
 import "./Home.scss"
-import ELTag from './../../../packages/tag/index';
-import { type } from './../../../packages/popper/src/usePopper';
 
 
 export default defineComponent({
@@ -14,7 +12,7 @@ export default defineComponent({
     const state = reactive({
       fits: ["fill", "contain", "cover", "none", "scale-down"],
       url: "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      dynamicTags: ['标签四', '标签五', '标签三'],
+      dynamicTags: ["标签四", "标签五", "标签三"],
     })
   
     const demoAvatar = () => {
@@ -22,12 +20,8 @@ export default defineComponent({
         return <ELAvatar shape="square" fit={e} size={100} src={state.url} style="margin-right: 30px"></ELAvatar>
       })
     }
-    const demoTag = () => {
-      return state.dynamicTags.map(e => {
-      return <ELTag closable  close={handleClose(e)} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
-      })
-    }
-    const handleClose = (tag) => {
+    const handleClose = (e, tag) => {
+      debugger
       console.log(tag,state.dynamicTags)
       state.dynamicTags.splice(state.dynamicTags.indexOf(tag), 1);
     }
@@ -51,7 +45,7 @@ export default defineComponent({
             <div>
               {/* {demoTag()} */}
               {state.dynamicTags.map(e => {
-         return <ELTag closable  close={handleClose(e)} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
+         return <ELTag disableTransitions={true} closable  close={(event) => {handleClose(event, e)}} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
       })}
               <ELTag type="primary">zzz</ELTag>
             </div>
