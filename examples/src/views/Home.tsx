@@ -21,8 +21,6 @@ export default defineComponent({
       })
     }
     const handleClose = (e, tag) => {
-      debugger
-      console.log(tag,state.dynamicTags)
       state.dynamicTags.splice(state.dynamicTags.indexOf(tag), 1);
     }
     return () => (
@@ -43,10 +41,10 @@ export default defineComponent({
             <ELlink type="danger">危险链接</ELlink>
             <ELlink type="info">信息链接</ELlink>
             <div>
-              {/* {demoTag()} */}
               {state.dynamicTags.map(e => {
-         return <ELTag disableTransitions={true} closable  close={(event) => {handleClose(event, e)}} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
-      })}
+                  return <ELTag disableTransitions={true} closable  close={(event) => {handleClose(event, e)}} effect="plain" key={e} style="margin-right: 30px" >{e}</ELTag>
+                })
+              }
               <ELTag type="primary">zzz</ELTag>
             </div>
           </ElMain>

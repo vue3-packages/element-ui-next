@@ -1,5 +1,4 @@
 import { defineComponent} from "vue";
-import {EventBus} from "../../../src/tools/eventBus";
 
 const ElLink = defineComponent({
   name: "ElLink",
@@ -17,14 +16,14 @@ const ElLink = defineComponent({
     icon: String,
   },
   setup(props, { attrs, slots }) {
-    const eventBus = new EventBus()
-    const handleClick = (event) => {
-      if (!props.disabled) {
-        if (!props.href) {
-          eventBus.emit("click", event);
-        }
-      }
-    };
+    // const eventBus = new EventBus()
+    // const handleClick = (event) => {
+    //   if (!props.disabled) {
+    //     if (!props.href) {
+    //       eventBus.emit("click", event);
+    //     }
+    //   }
+    // };
     return () => (
       <a class={[
         "el-link",
@@ -34,7 +33,6 @@ const ElLink = defineComponent({
       ]}
          href={props.disabled ? undefined : props.href}
          {...attrs}
-         onClick={handleClick}
       >
 
         {props.icon && <i class={props.icon}></i>}
