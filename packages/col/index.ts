@@ -1,4 +1,4 @@
-import ElCol from "./src/Col";
+import ElCol from "./src/col";
 import { App } from "vue";
 
 ElCol.install = (app: App) => {

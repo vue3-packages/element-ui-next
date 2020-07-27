@@ -11,6 +11,8 @@ import ELAvatar from "./avatar/index";
 import ELlink from "./link/index";
 import ELTag from "./tag/index";
 import ElCard from "./card/index";
+import ElCol from "./col/index";
+import ElRow from "./row/index";
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 
@@ -31,6 +33,8 @@ const components = [
   ELlink,
   ELTag,
   ElCard,
+  ElCol,
+  ElRow,
 ];
 
 const install = function (Vue: App): void {
@@ -62,4 +66,6 @@ export {
   ELlink,
   ELTag,
   ElCard,
+  ElCol,
+  ElRow,
 };

@@ -39,11 +39,13 @@ export default defineComponent({
       <div class="preview">
         <div class="preview__card">
           <div class="preview__demo">
-            {slots.default?.()}
+            {slots.demo?.()}
           </div>
           <div style={{ height: `${state.codeHeight}px` }} class="preview__code">
             <div ref={codeRef} class="preview__coderef">
-              <pre><code class="language-markup" v-text={props.source}></code></pre>
+              <pre>
+                <code class="language-markup">{props.source}</code>
+              </pre>
             </div>
           </div>
           <div class="preview__footer" onClick={toggleCode}>

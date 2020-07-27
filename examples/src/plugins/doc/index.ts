@@ -1,12 +1,13 @@
 import { Plugin } from "vite";
 import path from "path";
 import MarkdownIt from "markdown-it";
+import mdContainer from "markdown-it-container";
 
 const docRule = /^\/@docs\/(.*?).md$/;
 
 interface VuedcoPluginOptions {
   docsPath?: (root: string) => string | undefined;
-  plugins?: unknown[];
+  plugins?: any[];
 }
 
 function stripScript(content: string) {
@@ -43,7 +44,7 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
         fileToRequest(filePath: string, root: string) {
           const docDir = docsPath?.(root) || root;
           if (filePath.startsWith(docDir) && filePath.endsWith(".md")) {
-            const reqPath = filePath.replace(docDir, "");
+            const reqPath = filePath.replace(docDir, "").replace(/\\/g, "/");
             return `/@docs/${reqPath}`;
           }
         },
@@ -95,10 +96,9 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
                     }`,
                     `${id}.template = ${JSON.stringify(
                       `<Preview :source="source()">
-                        ${template} 
+                        <template v-slot:demo>${template}</template>
                       </Preview>`,
                     )}`,
-                    // 'injectCss(,)'
                   ].join("\n"),
                 });
                 return `<pre></pre><${id} />`;
@@ -106,10 +106,25 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
               return "";
             },
           });
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          md.use(require("markdown-it-container"), "demo");
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          md.use(require("markdown-it-container"), "tip");
+          md.use(mdContainer, "demo", {
+            validate(params) {
+              return params.trim().match(/^demo\s*(.*)$/);
+            },
+            render(tokens, idx) {
+              const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+              if (tokens[idx].nesting === 1) {
+                const description = m && m.length > 1 ? m[1] : "";
+                const content = tokens[idx + 1].type === "fence" ? tokens[idx + 1].content : "";
+                return `<demo-block>
+                ${description ? `<div>${md.render(description)}</div>` : ""}
+                <!--element-next-demo: ${content}:element-next-demo-->
+                `;
+              }
+              return "</demo-block>";
+            },
+          });
+          md.use(mdContainer, "tip");
+          md.use(mdContainer, "warning");
           const context = md.render(ctx.code, {});
           const docComponent = `
           import { createApp, defineComponent } from 'vue';

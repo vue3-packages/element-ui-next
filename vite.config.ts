@@ -9,12 +9,13 @@ const pathResolve = (pathStr: string) => {
 const config: UserConfig = {
   alias: {
     "/@/": pathResolve("./examples/src"),
+    vue: "vue/dist/vue.esm-bundler.js",
   },
   outDir: pathResolve("./examples/dist"),
   plugins: [
     createVuedcoPlugin({
       docsPath(root: string) {
-        return path.join(root, "./examples/src/views");
+        return path.join(root, "./packages/");
       },
     }),
   ],

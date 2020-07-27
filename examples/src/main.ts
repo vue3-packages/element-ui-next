@@ -7,6 +7,7 @@ import "../../packages/styles/index.scss";
 import "./assets/prism.css";
 import "./assets/prism.js";
 import Preview from "./views/Preview";
+import ElementUiNext from "../../packages/index";
 
 (window as any).Prism.plugins.NormalizeWhitespace.setDefaults({
   indent: 0,
@@ -21,5 +22,5 @@ import Preview from "./views/Preview";
 const app = createApp(App);
 
 app.component("Preview", Preview);
-
+app.use(ElementUiNext);
 app.use(router).use(store).mount("#app");
