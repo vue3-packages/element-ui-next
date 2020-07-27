@@ -6,6 +6,15 @@ const routes: RouteRecordRaw[] = [
     name: "Home",
     component: () => import("../views/Home"),
   },
+  {
+    path: "/changeLog",
+    name: "changeLog",
+    meta: {
+      title: "更新日志",
+      key: "changeLog",
+    },
+    component: () => import("../../../ChangeLog.md"),
+  },
 ];
 
 const router = createRouter({
@@ -14,3 +23,4 @@ const router = createRouter({
 });
 
 export default router;
+export { routes };

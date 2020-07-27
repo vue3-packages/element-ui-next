@@ -1,6 +1,8 @@
 import {defineComponent, ref} from "vue"
 import {ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup, ElButton} from "../../../../packages/index"
 import "./cAside.scss"
+import {routes} from "../../router/index"
+import {RouteRecordRaw} from "vue-router"
 
 const CAside = defineComponent({
   name: "CHeader",
@@ -10,6 +12,28 @@ const CAside = defineComponent({
     const handleSelect = (key, keyPath) => {
       console.log(key, keyPath);
     }
+    const renderMenus = () => {
+      const menus = routes.filter(item => item.meta).map((item: RouteRecordRaw) => {
+        if (item.children) {
+          return (
+            <ElSubmenu slots={{
+              title: () => (
+                <>
+                <span>{item.meta.title}</span>
+                </>
+              )
+            }} index={item.meta.key}>
+
+            </ElSubmenu>
+          )
+        } else {
+          return (
+            <ElMenuItem index={item.meta.key}>{item.meta.title}</ElMenuItem>
+          )
+        }
+      })
+      return menus
+    }
     return () => (
       <div class="c-aside">
         <ElButton onClick={() => {collapse.value = false}}>展开</ElButton>
@@ -18,42 +42,23 @@ const CAside = defineComponent({
         collapse={collapse.value}
         select={handleSelect}
         defaultActive={activeIndex.value}>
-          <ElMenuItem index="1">处理中心</ElMenuItem>
+          { renderMenus() }
+          {/* <ElMenuItem index="1">更新日志</ElMenuItem>
           <ElSubmenu slots={{
             title: () => (
               <>
-              <i class="el-icon-location"></i>
-              <span>我的工作台</span>
+              <span>组件</span>
               </>
             )
           }} index="2">
             <ElMenuItemGroup slots={{
-              title: () => "分组1"
+              title: () => "Basic"
             }}>
-              <ElMenuItem index="2-1">选项1</ElMenuItem>
-              <ElMenuItem index="2-2">选项2</ElMenuItem>
+              <ElMenuItem index="2-1">Container 布局容器</ElMenuItem>
+              <ElMenuItem index="2-2">Icon 图标</ElMenuItem>
+              <ElMenuItem index="2-2">Button 按钮</ElMenuItem>
             </ElMenuItemGroup>
-            <ElMenuItem index="2-3">选项3</ElMenuItem>
-            <ElSubmenu slots={{
-              title: () => ("选项4")
-            }} index="2-4">
-              <ElMenuItemGroup slots={{
-                title: () => "分组2"
-              }}>
-                <ElMenuItem index="2-4-1">选项1</ElMenuItem>
-              </ElMenuItemGroup>
-              <ElMenuItem index="2-4-2">选项2</ElMenuItem>
-              <ElMenuItem index="2-4-3">选项3</ElMenuItem>
-            </ElSubmenu>
-          </ElSubmenu>
-          <ElMenuItem disabled index="3">
-            <i class="el-icon-menu"></i>
-            消息中心
-          </ElMenuItem>
-          <ElMenuItem index="4">
-            <i class="el-icon-menu"></i>
-            订单管理
-          </ElMenuItem>
+          </ElSubmenu> */}
         </ElMenu>
       </div>
     )
