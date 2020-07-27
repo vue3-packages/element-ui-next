@@ -59,10 +59,12 @@ const ElMenuItem = defineComponent({
     }
     const onMouseEnter = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
+      // @ts-ignore
       menuItem?.value?.style?.backgroundColor = state.rootMenu.hoverBackground;
     }
     const onMouseLeave = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
+      // @ts-ignore
       menuItem?.value?.style?.backgroundColor = state.rootMenu.backgroundColor;
     }
     return () => (

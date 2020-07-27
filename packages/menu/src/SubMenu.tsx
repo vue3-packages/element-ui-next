@@ -1,4 +1,4 @@
-import {defineComponent,getCurrentInstance, computed, ref, onMounted, onBeforeMount, Transition, inject} from "vue"
+import {defineComponent,getCurrentInstance, computed, ref, onMounted, onBeforeMount, inject} from "vue"
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import CollapseTransition from "../../Transition/CollapseTransition"
 import ElPopper from "../../popper/index"
@@ -254,22 +254,21 @@ const ElSubmenu = defineComponent({
         {isMenuPopup.value ? (
             opened.value ? (
               <ElPopper
+              name={menuTransitionName.value}
               placement={currentPlacement.value}>
-                <Transition name={menuTransitionName.value}>
-                  <div
-                    ref={menu}
-                    class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
-                    onMouseenter={($event) => handleMouseenter($event, 100)}
-                    onMouseleave={() => handleMouseleave(true)}
-                    onFocus={($event) => handleMouseenter($event, 100)}>
-                    <ul
-                      role="menu"
-                      class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
-                      style={{ backgroundColor: state.rootMenu.backgroundColor || "" }}>
-                      {slots.default?.()}
-                    </ul>
-                  </div>
-                </Transition>
+                <div
+                  ref={menu}
+                  class={[`el-menu--${state.rootMenu.mode}`, props.popperClass]}
+                  onMouseenter={($event) => handleMouseenter($event, 100)}
+                  onMouseleave={() => handleMouseleave(true)}
+                  onFocus={($event) => handleMouseenter($event, 100)}>
+                  <ul
+                    role="menu"
+                    class={["el-menu el-menu--popup", `el-menu--popup-${currentPlacement.value}`]}
+                    style={{ backgroundColor: state.rootMenu.backgroundColor || "" }}>
+                    {slots.default?.()}
+                  </ul>
+                </div>
               </ElPopper>
             ) : (<div></div>)
         ) : (

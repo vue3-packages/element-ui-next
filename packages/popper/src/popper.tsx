@@ -1,7 +1,56 @@
-import { defineComponent, onMounted, getCurrentInstance, Teleport, PropType, reactive, watch, watchEffect } from "vue"
+import { defineComponent, onMounted, getCurrentInstance, Teleport, PropType, reactive, watch, watchEffect, Transition } from "vue"
 
 import { usePopper, Placement } from "./usePopper"
 import useClickAway from "../../../src/hooks/useClickAway"
+
+const PopperTransitionOpt = {
+  onBeforeEnter(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  },
+
+  onEnter(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  },
+
+  onAfterEnter(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  },
+
+  onBeforeLeave(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  },
+
+  onLeave(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  },
+
+  onAfterLeave(_el: Element) {
+    const el = _el as HTMLElement
+    debugger
+  }
+}
+
+const PopperTransition = defineComponent({
+  name: "ElPopperTransition",
+  props: {
+    name: {
+      type: String,
+      default: ""
+    }
+  },
+  setup(props, { attrs, slots }) {
+    return () => (
+      <Transition name={props.name} {...attrs} {...PopperTransitionOpt}>
+        {slots.default?.()}
+      </Transition>
+    )
+  }
+})
 
 const PopperInner = defineComponent({
   props: {
@@ -13,7 +62,6 @@ const PopperInner = defineComponent({
   setup({ setRootEl }, { slots }) {
     onMounted(() => {
       const instance = getCurrentInstance()
-      // let node = instance!.vnode.popperEl
       let popperEl = instance!.vnode.el
       while (popperEl && !popperEl.tagName) {
         popperEl = popperEl.nextSibling
@@ -52,6 +100,9 @@ const Popper = defineComponent({
     strategy: {
       type: String as PropType<"absolute" | "fixed">,
       default: "bottom"
+    },
+    name: {
+      type: String
     }
   },
   setup(props, { attrs, slots, emit }) {
@@ -116,7 +167,16 @@ const Popper = defineComponent({
       return (
         <>
           <Teleport to={`#${popperEl.id}`}>{slots.popper?.()}</Teleport>
-          <PopperInner setRootEl={setRootEl}>{slots.default?.()}</PopperInner>
+          <PopperInner setRootEl={setRootEl}>
+            <PopperTransition name={props.name}>
+              {slots.default?.()}
+            </PopperTransition>
+          </PopperInner>
+          {/* <PopperTransition name={props.name}>
+            <PopperInner setRootEl={setRootEl}>
+              {slots.default?.()}
+            </PopperInner>
+          </PopperTransition> */}
         </>
       )
     }
@@ -124,3 +184,6 @@ const Popper = defineComponent({
 })
 
 export default Popper
+export {
+  PopperTransition
+}
