@@ -1,4 +1,4 @@
-import { defineComponent, computed, ref, inject, watch, getCurrentInstance } from "vue";
+import { defineComponent, computed, ref, inject, watch, getCurrentInstance, watchEffect } from "vue";
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import useRender from "./../../../src/hooks/renderHooks";
 
@@ -20,7 +20,6 @@ const ElMenuItem = defineComponent({
   },
   setup (props, {slots}) {
     let state = inject("menuConfig") as MenuHooks
-    const instance = getCurrentInstance()
     const menuItem = ref(null)
     let style = usePaddingStyle(menuItem, state)
     watch(() => state.rootMenu, (val) => {
@@ -59,12 +58,26 @@ const ElMenuItem = defineComponent({
     }
     const onMouseEnter = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
+      // @ts-ignore
       menuItem?.value?.style?.backgroundColor = state.rootMenu.hoverBackground;
     }
     const onMouseLeave = (e?: MouseEvent | FocusEvent) => {
       if (state.rootMenu.mode === "horizontal" && !state.rootMenu.backgroundColor) return;
+      // @ts-ignore
       menuItem?.value?.style?.backgroundColor = state.rootMenu.backgroundColor;
     }
+
+    
+    const rootMenuName = ref("")
+    const menuNames = ["ElMenu", "ElMenuItem", "ElMenuItemGroup", "ElSubmenu"]
+    watchEffect(() => {
+      const instance = getCurrentInstance()
+      let parent = instance?.parent
+      while(parent && !menuNames.includes(parent?.type.name || "")) {
+        parent = parent.parent
+      }
+      rootMenuName.value = parent?.type.name || ""
+    })
     return () => (
       <li
       tabindex={-1}
@@ -87,13 +100,9 @@ const ElMenuItem = defineComponent({
       onBlur={onMouseLeave}
       onMouseleave={onMouseLeave}
       onClick={handleClick}>
-        {instance?.parent?.type.name === "ElMenu" &&
-          state.rootMenu.collapse &&
-          (slots.title || props.slots?.title) ? "1" : "2"}
         {
-          (instance?.parent?.type.name === "ElMenu" &&
-          state.rootMenu.collapse &&
-          (slots.title || props.slots?.title))
+          (rootMenuName.value === "ElMenu" &&
+          state.rootMenu.collapse)
           ? (
             <>
               {slots.title?.() || props.slots?.title?.()}

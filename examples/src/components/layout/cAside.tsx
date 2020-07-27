@@ -18,7 +18,7 @@ const CAside = defineComponent({
         collapse={collapse.value}
         select={handleSelect}
         defaultActive={activeIndex.value}>
-          <ElMenuItem index="1">处理中心</ElMenuItem>
+          <ElMenuItem index="1"><span>处理中心</span></ElMenuItem>
           <ElSubmenu slots={{
             title: () => (
               <>
@@ -48,11 +48,11 @@ const CAside = defineComponent({
           </ElSubmenu>
           <ElMenuItem disabled index="3">
             <i class="el-icon-menu"></i>
-            消息中心
+            <span>消息中心</span>
           </ElMenuItem>
           <ElMenuItem index="4">
             <i class="el-icon-menu"></i>
-            订单管理
+            <span>订单管理</span>
           </ElMenuItem>
         </ElMenu>
       </div>

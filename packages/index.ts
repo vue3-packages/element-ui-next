@@ -9,7 +9,7 @@ import ElIcon from "./icon/index";
 import ElMain from "./main/index";
 import ELAvatar from "./avatar/index";
 import ELlink from "./link/index";
-import ELTag from "./tag/index"
+import ELTag from "./tag/index";
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 
@@ -28,7 +28,7 @@ const components = [
   ELAvatar,
   ElMenuItemGroup,
   ELlink,
-  ELTag
+  ELTag,
 ];
 
 const install = function (Vue: App): void {
@@ -58,5 +58,5 @@ export {
   ELAvatar,
   ElMenuItemGroup,
   ELlink,
-  ELTag
+  ELTag,
 };
