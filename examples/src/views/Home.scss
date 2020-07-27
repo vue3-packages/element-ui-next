@@ -3,14 +3,14 @@
   padding: 0 100px;
   min-width: 1340px;
   .el-container {
-    height: calc(100% - 110px);
+    height: calc(100% - 150px);
   }
   .el-header {
     border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
   }
   .el-header, .el-footer {
     color: #333;
-    margin-bottom: 30px;
   }
   
   .el-aside {

@@ -1,5 +1,17 @@
 .preview {
   text-align: left;
+  &__description {
+    padding: 10px 20px;
+    box-sizing: border-box;
+    border: 1px solid #ebebeb;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 22px;
+    color: #666;
+    word-break: break-word;
+    margin: 10px;
+    background-color: #fff;
+  }
   &__title {
     font-size: 18px;
     margin: 30px 0 20px 0;
@@ -28,7 +40,14 @@
   &__coderef {
     overflow: hidden;
     > pre {
-      padding: 20px 0;
+      padding: 0 0 10px 0;
+    }
+  }
+  &__coder {
+    .language-markup {
+      border: none;
+      padding: 0 20px;
+      font-size: 12px;
     }
   }
   &__comment {

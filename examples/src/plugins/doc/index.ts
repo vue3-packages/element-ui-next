@@ -5,6 +5,27 @@ import mdContainer from "markdown-it-container";
 
 const docRule = /^\/@docs\/(.*?).md$/;
 
+const demoContainer = (md, callback: (description: string) => void) => ({
+  validate(params) {
+    return params.trim().match(/^demo\s*(.*)$/);
+  },
+  render(tokens, idx) {
+    const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
+    if (tokens[idx].nesting === 1) {
+      const description = m && m.length > 1 ? m[1] : "";
+      const content = tokens[idx + 1].type === "fence" ? tokens[idx + 1].content : "";
+      description && callback(md.render(description));
+      // return `<demo-block>
+      // ${description ? `<template v-slot:description>${md.render(description)}</template>` : ""}
+      // <!--element-next-demo: ${content}:element-next-demo-->
+      // `;
+      return "";
+    }
+    // return "</demo-block>";
+    return "";
+  },
+});
+
 interface VuedcoPluginOptions {
   docsPath?: (root: string) => string | undefined;
   plugins?: any[];
@@ -62,6 +83,7 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
             id: string;
             component: string;
           }[] = [];
+          let currentDescription = "";
 
           const md = new MarkdownIt("default", {
             html: true,
@@ -70,13 +92,11 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
             highlight: function (code: string, lang: string) {
               if (lang === "html") {
                 const id = `Demo${demos.length}`;
-                // const fullCode = `${code}`
                 const stript = (stripScript(code) || "export default {}").replace(
                   "export default",
                   `const ${id} =`,
                 );
                 const template = stripTemplate(code);
-                const styles = stripStyle(code);
 
                 demos.push({
                   id: id,
@@ -97,6 +117,7 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
                     `${id}.template = ${JSON.stringify(
                       `<Preview :source="source()">
                         <template v-slot:demo>${template}</template>
+                        <template v-slot:description>${currentDescription}</template>
                       </Preview>`,
                     )}`,
                   ].join("\n"),
@@ -106,23 +127,13 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
               return "";
             },
           });
-          md.use(mdContainer, "demo", {
-            validate(params) {
-              return params.trim().match(/^demo\s*(.*)$/);
-            },
-            render(tokens, idx) {
-              const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
-              if (tokens[idx].nesting === 1) {
-                const description = m && m.length > 1 ? m[1] : "";
-                const content = tokens[idx + 1].type === "fence" ? tokens[idx + 1].content : "";
-                return `<demo-block>
-                ${description ? `<div>${md.render(description)}</div>` : ""}
-                <!--element-next-demo: ${content}:element-next-demo-->
-                `;
-              }
-              return "</demo-block>";
-            },
-          });
+          md.use(
+            mdContainer,
+            "demo",
+            demoContainer(md, (description) => {
+              currentDescription = description;
+            }),
+          );
           md.use(mdContainer, "tip");
           md.use(mdContainer, "warning");
           const context = md.render(ctx.code, {});

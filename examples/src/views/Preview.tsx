@@ -15,7 +15,7 @@ export default defineComponent({
       default: ""
     }
   },
-  setup(props, { slots }) {
+  setup(props, { slots, attrs }) {
     const codeRef = ref<HTMLDivElement>()
     const state = reactive({
       codeHeight: 0
@@ -43,7 +43,14 @@ export default defineComponent({
           </div>
           <div style={{ height: `${state.codeHeight}px` }} class="preview__code">
             <div ref={codeRef} class="preview__coderef">
-              <pre>
+              {
+                slots.description && (
+                  <div class="preview__description">
+                    {slots.description?.()}
+                  </div>
+                )
+              }
+              <pre class="preview__coder">
                 <code class="language-markup">{props.source}</code>
               </pre>
             </div>
