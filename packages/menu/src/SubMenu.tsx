@@ -1,4 +1,4 @@
-import {defineComponent,getCurrentInstance, computed, ref, onMounted, onBeforeMount, inject} from "vue"
+import {defineComponent,getCurrentInstance, computed, ref, onMounted, onBeforeMount, inject, watchEffect} from "vue"
 import {usePaddingStyle, MenuHooks} from "./menuHooks"
 import CollapseTransition from "../../Transition/CollapseTransition"
 import ElPopper from "../../popper/index"
@@ -34,6 +34,7 @@ const ElSubmenu = defineComponent({
     let state = inject("menuConfig") as MenuHooks
     let {render} = useRender()
     let style = usePaddingStyle(root, state)
+    const instance = getCurrentInstance()
 
     onMounted(() => {
       style = usePaddingStyle(root, state)
@@ -140,13 +141,21 @@ const ElSubmenu = defineComponent({
           state.eventBus.emit("closeMenu", props.index)
         }
       }, props.hideTimeout);
-
-      // if (appendToBody && deepDispatch) {
-      //   if (this.$parent.$options.name === "ElSubmenu") {
-      //     this.$parent.handleMouseleave(true);
-      //   }
-      // }
+      if (deepDispatch) {
+        let parent = instance?.parent
+        while(parent && parent.type.name !== "ElMenu") {
+          if (parent?.type.name === "ElSubmenu") {
+            // @ts-ignore
+            parent.handleMouseleave(true)
+            break;
+          } else {
+            parent = parent.parent
+          }
+        }
+      }
     }
+    // @ts-ignore
+    instance?.handleMouseleave = handleMouseleave
 
 
     const handleClick = () => {
@@ -179,7 +188,6 @@ const ElSubmenu = defineComponent({
     const menu = ref(null)
     const isFirstLevel = computed(() => {
       let isFirstLevel = true;
-      const instance = getCurrentInstance()
       let parent = instance?.parent;
       while (parent && parent.type.name !== "ElMenu") {
         if (["ElSubmenu", "ElMenuItemGroup"].indexOf(parent.type.name || "") > -1) {
@@ -191,19 +199,20 @@ const ElSubmenu = defineComponent({
       }
       return isFirstLevel;
     })
-    let currentPlacement = computed(() => {
-      return state.rootMenu.mode === "horizontal" && isFirstLevel.value
+    let currentPlacement = ref("bottom-start")
+    watchEffect(() => {
+      currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel.value
       ? "bottom-start"
       : "right-start";
     })
-    // const updatePlacement = () => {
-    //   debugger
-    //   currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel.value
-    //     ? "bottom-start"
-    //     : "right-start";
-    // }
+
+    const updatePlacement = () => {
+      currentPlacement.value = state.rootMenu.mode === "horizontal" && isFirstLevel.value
+        ? "bottom-start"
+        : "right-start";
+    }
     const initPopper = (el: HTMLElement) => {
-      // updatePlacement();
+      updatePlacement();
     }
     const handleCollapseToggle = (value) => {
       if (value) {

@@ -199,12 +199,12 @@ const Menu = defineComponent({
       state.eventBus.emit("toggle-collapse", value)
     })
 
-    const menuComponent = (
+    const menuComponent = () => ((
       <ul
         role="menubar"
         data-component="ElMenu"
         data-menuId={menuId}
-        key={ +(props.collapse || 0) }
+        // key={ +(props.collapse || 0) }
         style={{ backgroundColor: props.backgroundColor || "" }}
         class={{
           "el-menu--horizontal": props.mode === "horizontal",
@@ -214,12 +214,12 @@ const Menu = defineComponent({
       >
         { slots.default?.() }
       </ul>
-    )
+    ))
     return props.collapseTransition ? () => (
-      <MenuCollapseTransition>
-        {menuComponent}
+      <MenuCollapseTransition collapse={props.collapse}>
+        {menuComponent()}
       </MenuCollapseTransition>
-    ) : () => menuComponent
+    ) : () => menuComponent()
   }
 })
 
