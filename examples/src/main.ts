@@ -7,9 +7,11 @@ import "../../packages/styles/index.scss";
 import "./assets/prism.css";
 import "./assets/prism.js";
 import Preview from "./views/Preview";
-import DemoBlock from "./views/DemoBlock";
 import ElementUiNext from "../../packages/index";
+import "./demo-styles/index.scss";
+import Icons from "./assets/icon.json";
 
+(window as any).icon = Icons;
 (window as any).Prism.plugins.NormalizeWhitespace.setDefaults({
   indent: 0,
   "remove-trailing": true,
@@ -23,6 +25,5 @@ import ElementUiNext from "../../packages/index";
 const app = createApp(App);
 
 app.component("Preview", Preview);
-app.component(DemoBlock.name, DemoBlock);
 app.use(ElementUiNext);
 app.use(router).use(store).mount("#app");

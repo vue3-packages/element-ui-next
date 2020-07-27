@@ -79,6 +79,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: (): Component => import("/@docs/button/__docs__/button.md"),
               },
+              {
+                path: "/icon",
+                name: "icon",
+                meta: {
+                  title: "Icon 图标",
+                  key: "icon",
+                },
+                component: (): Component => import("/@docs/icon/__docs__/icon.md"),
+              },
             ],
           },
         ],

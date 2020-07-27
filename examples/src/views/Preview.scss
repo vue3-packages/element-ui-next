@@ -40,7 +40,7 @@
   &__coderef {
     overflow: hidden;
     > pre {
-      padding: 0 0 10px 0;
+      padding: 10px 0;
     }
   }
   &__coder {
@@ -74,6 +74,7 @@
     }
   }
   &__footer {
+    font-size: 12px;
     border-top: 1px solid #eaeefb;
     height: 44px;
     line-height: 43px;
@@ -86,6 +87,7 @@
     color: #d3dce6;
     cursor: pointer;
     position: relative;
+    transition: color .3s,background-color .3s;
     &:hover {
       color: #409eff;
       background-color: #f9fafc;

@@ -2,6 +2,7 @@ import { Plugin } from "vite";
 import path from "path";
 import MarkdownIt from "markdown-it";
 import mdContainer from "markdown-it-container";
+import icon from "../../assets/icon.json";
 
 const docRule = /^\/@docs\/(.*?).md$/;
 
@@ -79,6 +80,7 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
         // TODO: 目前使用需使用 vue.esm-bundler.js, 需改为 @vue/compiler-sfc 编译组件
         // transform(code, isImport, isBuild, path, query) {
         transform(ctx) {
+          const fileName = ctx.path.split("/").pop().split(".")[0];
           const demos: {
             id: string;
             component: string;
@@ -115,9 +117,12 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
                       }
                     }`,
                     `${id}.template = ${JSON.stringify(
-                      `<Preview :source="source()">
+                      `<Preview class="demo-${fileName}" :source="source()">
                         <template v-slot:demo>${template}</template>
-                        <template v-slot:description>${currentDescription}</template>
+                        ${
+                          currentDescription &&
+                          `<template v-slot:description>${currentDescription}</template>`
+                        }
                       </Preview>`,
                     )}`,
                   ].join("\n"),
@@ -136,7 +141,11 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
           );
           md.use(mdContainer, "tip");
           md.use(mdContainer, "warning");
-          const context = md.render(ctx.code, {});
+          const code = ctx.code.replace(
+            /\$icon/g,
+            `[${icon.map((item) => `"${item}"`).toString()}]`,
+          );
+          const context = md.render(code, {});
           const docComponent = `
           import { createApp, defineComponent } from 'vue';
   

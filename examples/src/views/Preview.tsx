@@ -38,24 +38,24 @@ export default defineComponent({
     return () => (
       <div class="preview">
         <div class="preview__card">
-          <div class="preview__demo">
-            {slots.demo?.()}
+          <div class="preview__demo source">
+            <div>{slots.demo?.()}</div>
           </div>
-          <div style={{ height: `${state.codeHeight}px` }} class="preview__code">
+          <div style={{ height: `${state.codeHeight}px` }} class="preview__code meta">
             <div ref={codeRef} class="preview__coderef">
               {
                 slots.description && (
-                  <div class="preview__description">
+                  <div class="preview__description description">
                     {slots.description?.()}
                   </div>
                 )
               }
-              <pre class="preview__coder">
+              <pre class="preview__coder highlight">
                 <code class="language-markup">{props.source}</code>
               </pre>
             </div>
           </div>
-          <div class="preview__footer" onClick={toggleCode}>
+          <div class="preview__footer demo-block-control" onClick={toggleCode}>
             { state.codeHeight > 0 ? "隐藏代码" : "显示代码" }
           </div>
         </div>
