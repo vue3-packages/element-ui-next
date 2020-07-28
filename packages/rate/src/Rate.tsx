@@ -16,7 +16,7 @@ const ElRate = defineComponent({
         },
         highThreshold: {
           type: Number,
-          default: 4
+          default: 0
         },
         max: {
           type: Number,
@@ -77,9 +77,10 @@ const ElRate = defineComponent({
         input:  Function,
         change: Function
     },
-    setup(props){
+    setup(props, {emit}){
       if (!props.value) {
         props.input?.(0)
+        emit("input",0)
       }
       const state = reactive({
         pointerAtLeftHalf: true,
@@ -201,11 +202,15 @@ const ElRate = defineComponent({
         if (props.allowHalf && state.pointerAtLeftHalf) {
           // tslint:disable-next-line:no-unused-expression
           props.input?.(state.currentValue)
+          emit("input",state.currentValue)
           // tslint:disable-next-line:no-unused-expression
           props.change?.(state.currentValue)
+          emit("change",state.currentValue)
         } else {
           props.input?.(value);
+          emit("input",value)
           props.change?.(value);
+          emit("change",value)
         }
       }
 
@@ -236,7 +241,9 @@ const ElRate = defineComponent({
         currentValue = currentValue > props.max ? props.max : currentValue;
 
         props.input?.(currentValue);
+        emit("input",currentValue)
         props.change?.(currentValue);
+        emit("change",currentValue)
       }
 
       const setCurrentValue = (value, event) => {
@@ -300,54 +307,24 @@ const ElRate = defineComponent({
               onMousemove={() => setCurrentValue(item,event)}
               onMouseleave={resetCurrentValue}
               onClick={() => selectValue(item)}
-              style="{ cursor: rateDisabled ? 'auto' : 'pointer' }"
+              style={ {cursor: rateDisabled.value ? "auto" : "pointer" }}
               key={key}>
               <i
-                class={[classes[item - 1], { "hover": state.hoverIndex === item },"el-rate__icon"]}
-                style={getIconStyle(item).toString()}>
+                class={["el-rate__icon", classes.value[item - 1], { "hover": state.hoverIndex === item }]}
+                style={getIconStyle(item)}>
                 {
                   showDecimalIcon(item) ? <i
                     class={[decimalIconClass.value,"el-rate__decimal"]}
                     style={decimalStyle.value}>
-                  </i> : ""
+                  </i> : null
                 }
               </i>
             </span>
           ))
-        }</div>
+        }
+        {(props.showText || props.showScore) ? <span class="el-rate__text" style={{color: props.textColor }}>{ text.value }</span> : ""}
+        </div>
       )
-      return () => {
-        // tslint:disable-next-line:no-unused-expression
-        <div
-        class="el-rate"
-        onKeydown={handleKey}
-        role="slider"
-        aria-valuenow={state.currentValue}
-        aria-valuetext={text.value}
-        aria-valuemin={0}
-        aria-valuemax={props.max}
-        tabindex={0}>
-        {numberToArr(props.max).map((item,key) => {
-          return <span
-          class="el-rate__item"
-          onMousemove={() => setCurrentValue(item,event)}
-          onMouseleave={resetCurrentValue}
-          onClick={() => selectValue(item)}
-          style="{ cursor: rateDisabled ? 'auto' : 'pointer' }"
-          key={key}>
-          <i
-            class={[classes[item - 1], { "hover": state.hoverIndex === item },"el-rate__icon"]}
-            style={getIconStyle(item).toString()}>
-            {showDecimalIcon(item) && <i
-              class={[decimalIconClass.value,"el-rate__decimal"]}
-              style={decimalStyle.value}>
-            </i>}
-          </i>
-        </span>
-        })}
-        {(props.showText || props.showScore) && <span class="el-rate__text" style={{color: props.textColor }}>{{ text }}</span>}
-      </div>
-      }
     }
 })
 export default ElRate
