@@ -1,11 +1,10 @@
-import { defineComponent, inject, reactive, computed } from "vue";
+import { defineComponent, inject, reactive, computed, watch } from "vue";
 import { hasClass } from "../../../src/utils/dom";
 import { isObject } from "../../../src/utils/types";
 import { ElFormSymbol } from "../../provides";
-import { type } from './../../popper/src/usePopper';
 
-const ELRate = defineComponent({
-    name: "ELRate",
+const ElRate = defineComponent({
+    name: "ElRate",
     props: {
         value: {
           type: Number,
@@ -75,10 +74,13 @@ const ELRate = defineComponent({
           type: String,
           default: "{value}"
         },
-        input: Function,
+        input:  Function,
         change: Function
     },
-    setup(props, { attrs, slots }){
+    setup(props){
+      if (!props.value) {
+        props.input?.(0)
+      }
       const state = reactive({
         pointerAtLeftHalf: true,
         currentValue: props.value,
@@ -98,6 +100,18 @@ const ELRate = defineComponent({
           }
           return result;
         
+      })
+      const decimalStyle = computed(() => {
+        let width = "";
+        if (rateDisabled.value) {
+          width = `${ valueDecimal.value }%`;
+        } else if (props.allowHalf) {
+          width = "50%";
+        }
+        return {
+          color: activeColor.value,
+          width
+        };
       })
       const valueDecimal = computed(() => {
         return props.value * 100 - Math.floor(props.value) * 100;
@@ -155,7 +169,7 @@ const ELRate = defineComponent({
           })
           .sort((a: any, b: any) => a - b);
         const matchedValue = map[matchedKeys[0]];
-        return isObject(matchedValue) ? matchedValue.value : (matchedValue || "");
+        return isObject(matchedValue.value) ? matchedValue.value : (matchedValue || "");
       }
       const getMigratingConfig = () => {
         return {
@@ -172,29 +186,30 @@ const ELRate = defineComponent({
           item - 0.5 <= state.currentValue &&
           item > state.currentValue;
         return showWhenDisabled || showWhenAllowHalf;
-      },
+      }
 
       const getIconStyle = (item) => {
         const voidColor = rateDisabled.value ? props.disabledVoidColor : props.voidColor;
         return {
-          color: item <= state.currentValue ? activeColor : voidColor
-        };
-      },
-
+          color: item <= state.currentValue ? activeColor.value : voidColor
+      }
+    }
       const selectValue = (value) => {
         if (rateDisabled.value) {
           return;
         }
         if (props.allowHalf && state.pointerAtLeftHalf) {
-         props.input(state.currentValue);
-          this.$emit('change', state.currentValue);
+          // tslint:disable-next-line:no-unused-expression
+          props.input?.(state.currentValue)
+          // tslint:disable-next-line:no-unused-expression
+          props.change?.(state.currentValue)
         } else {
-          this.$emit('input', value);
-          this.$emit('change', value);
+          props.input?.(value);
+          props.change?.(value);
         }
-      },
+      }
 
-      const handleKey = (e) => {
+      const handleKey = (e: { keyCode: any; stopPropagation: () => void; preventDefault: () => void; }) => {
         if (rateDisabled.value) {
           return;
         }
@@ -218,77 +233,89 @@ const ELRate = defineComponent({
           e.preventDefault();
         }
         currentValue = currentValue < 0 ? 0 : currentValue;
-        currentValue = currentValue > this.max ? this.max : currentValue;
+        currentValue = currentValue > props.max ? props.max : currentValue;
 
-        this.$emit('input', currentValue);
-        this.$emit('change', currentValue);
-      },
+        props.input?.(currentValue);
+        props.change?.(currentValue);
+      }
 
-      setCurrentValue(value, event) {
-        if (this.rateDisabled) {
+      const setCurrentValue = (value, event) => {
+        if (rateDisabled.value) {
           return;
         }
         /* istanbul ignore if */
-        if (this.allowHalf) {
+        if (props.allowHalf) {
           let target = event.target;
-          if (hasClass(target, 'el-rate__item')) {
-            target = target.querySelector('.el-rate__icon');
+          if (hasClass(target, "el-rate__item")) {
+            target = target.querySelector(".el-rate__icon");
           }
-          if (hasClass(target, 'el-rate__decimal')) {
+          if (hasClass(target, "el-rate__decimal")) {
             target = target.parentNode;
           }
-          this.pointerAtLeftHalf = event.offsetX * 2 <= target.clientWidth;
-          this.currentValue = this.pointerAtLeftHalf ? value - 0.5 : value;
+          state.pointerAtLeftHalf = event.offsetX * 2 <= target.clientWidth;
+          state.currentValue = state.pointerAtLeftHalf ? value - 0.5 : value;
         } else {
-          this.currentValue = value;
+          state.currentValue = value;
         }
-        this.hoverIndex = value;
-      },
+        state.hoverIndex = value;
+      }
 
-      resetCurrentValue() {
-        if (this.rateDisabled) {
+      const resetCurrentValue = () => {
+        if (rateDisabled.value) {
           return;
         }
-        if (this.allowHalf) {
-          this.pointerAtLeftHalf = this.value !== Math.floor(this.value);
+        if (props.allowHalf) {
+          state.pointerAtLeftHalf = props.value !== Math.floor(props.value);
         }
-        this.currentValue = this.value;
-        this.hoverIndex = -1;
+        state.currentValue = props.value;
+        state.hoverIndex = -1;
       }
+
+      const numberToArr = (val: number) => {
+        let i = 1
+        type arr = Array<number>
+        let arr : arr = []
+        for(; i <= val; i++){
+         arr.push(i)
+       }
+       return arr
+      }
+      watch(() => props.value, (val) => {
+        state.currentValue = val;
+        state.pointerAtLeftHalf = props.value !== Math.floor(props.value);
+      })
       return () => {
-          // <div
-      //   class="el-rate"
-      //   @keydown="handleKey"
-      //   role="slider"
-      //   :aria-valuenow="currentValue"
-      //   :aria-valuetext="text"
-      //   aria-valuemin="0"
-      //   :aria-valuemax="max"
-      //   tabindex="0">
-      //   {max.map((item,key) => {
-      //     return <span
-      //     class="el-rate__item"
-      //     @mousemove="setCurrentValue(item, $event)"
-      //     @mouseleave="resetCurrentValue"
-      //     @click="selectValue(item)"
-      //     :style="{ cursor: rateDisabled ? 'auto' : 'pointer' }"
-      //     key={key}>
-      //     <i
-      //       :class="[classes[item - 1], { 'hover': hoverIndex === item }]"
-      //       class="el-rate__icon"
-      //       style={getIconStyle(item)}>
-      //       {showDecimalIcon(item) && <i
-      //         class={decimalIconClass}
-      //         style={decimalStyle}
-      //         class="el-rate__decimal">
-      //       </i>}
-      //     </i>
-      //   </span>
-      //   })}
-      //   // tslint:disable-next-line: no-unused-expression
-      //   {(props.showText || props.showScore) && <span class="el-rate__text" style={ {"color: textColor"} }>{{ text }}</span>}
-      // </div>
+        // tslint:disable-next-line:no-unused-expression
+        <div
+        class="el-rate"
+        onKeydown={handleKey}
+        role="slider"
+        aria-valuenow={state.currentValue}
+        aria-valuetext={text.value}
+        aria-valuemin={0}
+        aria-valuemax={props.max}
+        tabindex={0}>
+        {numberToArr(props.max).map((item,key) => {
+          return <span
+          class="el-rate__item"
+          onMousemove={() => setCurrentValue(item,event)}
+          onMouseleave={resetCurrentValue}
+          onClick={() => selectValue(item)}
+          style="{ cursor: rateDisabled ? 'auto' : 'pointer' }"
+          key={key}>
+          <i
+            class={[classes[item - 1], { "hover": state.hoverIndex === item },"el-rate__icon"]}
+            style={getIconStyle(item).toString()}>
+            {showDecimalIcon(item) && <i
+              class={[decimalIconClass.value,"el-rate__decimal"]}
+              style={decimalStyle.value}>
+            </i>}
+          </i>
+        </span>
+        })}
+        {(props.showText || props.showScore) && <span class="el-rate__text" style={{color: props.textColor }}>{{ text }}</span>}
+      </div>
       }
-    },
+    }
 })
-export default ELRate
+export default ElRate

@@ -88,6 +88,35 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: (): Component => import("/@docs/icon/__docs__/icon.md"),
               },
+              {
+                path: "/link",
+                name: "link",
+                meta: {
+                  title: "Link 文字链接",
+                  key: "link",
+                },
+                component: (): Component => import("/@docs/link/__docs__/link.md"),
+              },
+            ],
+          },
+          {
+            path: "/form",
+            name: "form",
+            meta: {
+              title: "Form",
+              key: "form",
+            },
+            component: (): Component => Empty,
+            children: [
+              {
+                path: "/rate",
+                name: "rate",
+                meta: {
+                  title: "Rate 评分",
+                  key: "rate",
+                },
+                component: (): Component => import("/@docs/rate/__docs__/rate.md"),
+              },
             ],
           },
           {
