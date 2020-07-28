@@ -114,7 +114,7 @@
 :::demo
 ```html
 <el-container style="height: 500px; border: 1px solid #eee">
-  <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+  <el-aside width="200px" style="background-color: rgb(238, 241, 246); overflow-x: hidden">
     <el-menu :default-openeds="['1', '3']">
       <el-submenu index="1">
         <template v-slot:title><i class="el-icon-message"></i>导航一</template>

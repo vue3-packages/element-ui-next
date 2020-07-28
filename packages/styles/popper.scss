@@ -3,8 +3,6 @@
 
 @include b(popper) {
   position: absolute;
-  width: 0;
-  height: 0;
   .popper__arrow,
   .popper__arrow::after {
     position: absolute;
