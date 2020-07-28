@@ -1,7 +1,7 @@
 import {defineComponent,PropType,Transition} from "vue"
 
-const ELTag = defineComponent({
-    name: "ELTag",
+const ElTag = defineComponent({
+    name: "ElTag",
     props: {
         text: String,
         closable: Boolean,
@@ -51,4 +51,4 @@ const ELTag = defineComponent({
         );
     }
 })
-export default ELTag;
+export default ElTag;
