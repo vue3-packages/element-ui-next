@@ -7,7 +7,7 @@ import {RouteRecordRaw, useRouter} from "vue-router"
 const CAside = defineComponent({
   name: "CHeader",
   setup() {
-    const activeIndex = ref("2-1");
+    const activeIndex = ref("changeLog");
     const collapse = ref(false);
     const router  = useRouter()
     const handleSelect = (key, keyPath) => {

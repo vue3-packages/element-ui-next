@@ -14,15 +14,9 @@ const demoContainer = (md, callback: (description: string) => void) => ({
     const m = tokens[idx].info.trim().match(/^demo\s*(.*)$/);
     if (tokens[idx].nesting === 1) {
       const description = m && m.length > 1 ? m[1] : "";
-      const content = tokens[idx + 1].type === "fence" ? tokens[idx + 1].content : "";
       description && callback(md.render(description));
-      // return `<demo-block>
-      // ${description ? `<template v-slot:description>${md.render(description)}</template>` : ""}
-      // <!--element-next-demo: ${content}:element-next-demo-->
-      // `;
       return "";
     }
-    // return "</demo-block>";
     return "";
   },
 });
@@ -77,8 +71,6 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
         test(ctx) {
           return ctx.path.endsWith(".md");
         },
-        // TODO: 目前使用需使用 vue.esm-bundler.js, 需改为 @vue/compiler-sfc 编译组件
-        // transform(code, isImport, isBuild, path, query) {
         transform(ctx) {
           const fileName = ctx.path.split("/").pop().split(".")[0];
           const demos: {

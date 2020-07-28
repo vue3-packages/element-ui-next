@@ -36,7 +36,7 @@ export default defineComponent({
       highlightAll()
     })
     return () => (
-      <div class="preview">
+      <div class="preview demo-block">
         <div class="preview__card">
           <div class="preview__demo source">
             <div>{slots.demo?.()}</div>

@@ -156,8 +156,6 @@ const ElSubmenu = defineComponent({
     }
     // @ts-ignore
     instance?.handleMouseleave = handleMouseleave
-
-
     const handleClick = () => {
       if (
         (state.rootMenu.menuTrigger === "hover" && state.rootMenu.mode === "horizontal") ||

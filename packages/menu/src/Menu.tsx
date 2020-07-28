@@ -39,9 +39,7 @@ const Menu = defineComponent({
       type: Function
     }
   },
-  setup(props, {slots}) {
-
-
+  setup(props, {slots, emit}) {
     let state = useMenu()
     const menuId = "menuConfig"
     provide(menuId, state)
@@ -55,6 +53,9 @@ const Menu = defineComponent({
         activeIndex: state.rootMenu.activeIndex || props.defaultActive
       })
       initOpenedMenu()
+      if (state.rootMenu.activeIndex) {
+        state.setActive(state.items[state.rootMenu.activeIndex])
+      }
     }
 
     const initEvents = () => {
@@ -121,6 +122,7 @@ const Menu = defineComponent({
       }
       state.setActive(item);
       props.select?.(index, indexPath, item)
+      emit("select", index, indexPath, item)
       if (props.mode === "horizontal" || props.collapse) {
         state.rootMenu.openedMenus = [];
       }
@@ -131,9 +133,11 @@ const Menu = defineComponent({
       if (isOpened) {
         closeMenu(index);
         props.close?.(index, indexPath);
+        emit("close", index, indexPath);
       } else {
         openMenu(index, indexPath);
         props.open?.(index, indexPath);
+        emit("open", index, indexPath);
       }
     }
     
