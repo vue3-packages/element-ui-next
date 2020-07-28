@@ -1,4 +1,4 @@
-import {defineComponent, PropType, watch, onMounted, provide} from "vue";
+import {defineComponent, PropType, watch, onMounted, provide, getCurrentInstance} from "vue";
 import MenuCollapseTransition from "./MenuCollapseTransition"
 import { useMenu } from "./menuHooks";
 
@@ -140,7 +140,17 @@ const Menu = defineComponent({
         emit("open", index, indexPath);
       }
     }
-    
+
+    const open = (index) => {
+      const { indexPath } = state.submenus[index.toString()];
+      indexPath.forEach(i => openMenu(i, indexPath));
+    }
+    const close = (index) => {
+      closeMenu(index);
+    }
+    const instance = (getCurrentInstance() as any)
+    instance.close = close
+    instance.open = open
     const closeMenu = (index) => {
       for (let i = 0; i <= state.rootMenu.openedMenus.length - 1; i ++) {
         const menuIndex = state.rootMenu.openedMenus[i] as string

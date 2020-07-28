@@ -150,7 +150,6 @@ export function createVuedcoPlugin(options: VuedcoPluginOptions): Plugin {
             template: ${JSON.stringify(context)}
           });
           export default __script;`;
-          console.log(docComponent);
           return docComponent;
         },
       },
