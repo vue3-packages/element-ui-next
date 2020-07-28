@@ -284,6 +284,38 @@ const ElRate = defineComponent({
         state.currentValue = val;
         state.pointerAtLeftHalf = props.value !== Math.floor(props.value);
       })
+      return () => (
+        <div
+        class="el-rate"
+        onKeydown={handleKey}
+        role="slider"
+        aria-valuenow={state.currentValue}
+        aria-valuetext={text.value}
+        aria-valuemin={0}
+        aria-valuemax={props.max}
+        tabindex={0}>{
+          numberToArr(props.max).map((item,key) => (
+            <span
+              class="el-rate__item"
+              onMousemove={() => setCurrentValue(item,event)}
+              onMouseleave={resetCurrentValue}
+              onClick={() => selectValue(item)}
+              style="{ cursor: rateDisabled ? 'auto' : 'pointer' }"
+              key={key}>
+              <i
+                class={[classes[item - 1], { "hover": state.hoverIndex === item },"el-rate__icon"]}
+                style={getIconStyle(item).toString()}>
+                {
+                  showDecimalIcon(item) ? <i
+                    class={[decimalIconClass.value,"el-rate__decimal"]}
+                    style={decimalStyle.value}>
+                  </i> : ""
+                }
+              </i>
+            </span>
+          ))
+        }</div>
+      )
       return () => {
         // tslint:disable-next-line:no-unused-expression
         <div
