@@ -265,3 +265,11 @@ export function createEl(id: string, cls?: string): HTMLElement {
 export function removeEl(el: Element): void {
   if (el.parentNode) el.parentNode.removeChild(el);
 }
+
+export function prevent(event: Event): void {
+  event.preventDefault();
+}
+
+export function stopPropagation(event: Event): void {
+  event.stopPropagation();
+}

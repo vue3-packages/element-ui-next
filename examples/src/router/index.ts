@@ -135,6 +135,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: (): Component => import("/@docs/rate/__docs__/rate.md"),
               },
+              {
+                path: "/input",
+                name: "input",
+                meta: {
+                  title: "Input 输入框",
+                  key: "input",
+                },
+                component: (): Component => import("/@docs/input/__docs__/input.md"),
+              },
             ],
           },
           {
