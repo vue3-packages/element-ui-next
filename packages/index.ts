@@ -15,9 +15,9 @@ import ElCol from "./col/index";
 import ElRow from "./row/index";
 import ElRate from "./rate/index";
 import ElBadge from "./badge/index";
+import ElAlert from "./alert/index";
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
-import ElBadge from "./badge/index";
 
 const components = [
   ElButton,
@@ -40,6 +40,7 @@ const components = [
   ElRow,
   ElRate,
   ElBadge,
+  ElAlert,
 ];
 
 const install = function (Vue: App): void {
@@ -75,4 +76,5 @@ export {
   ElRow,
   ElRate,
   ElBadge,
+  ElAlert,
 };

@@ -1,4 +1,5 @@
-import {defineComponent, PropType ,computed, Transition} from "vue"
+import {defineComponent, PropType ,computed} from "vue"
+import Transition from "../../transition/CollapseTransition"
 
 const ElBadge = defineComponent({
   name: "ElBadge",
