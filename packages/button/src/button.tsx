@@ -1,5 +1,6 @@
 import { inject, computed, defineComponent, PropType } from "vue"
 import { ElFormSymbol, ElFormItemSymbol, useGlobal } from "../../provides/index"
+import concatClassName from "../../../src/tools/concatClassName"
 
 const Button = defineComponent({
   name: "ElButton",
@@ -33,26 +34,24 @@ const Button = defineComponent({
     const buttonDisabled = computed(() => {
       return props.disabled || elForm?.disabled
     })
-
+    let classList = [
+      "el-button",
+      `el-button--${props.type}`,
+      buttonSize.value ? "el-button--" + buttonSize.value : "",
+      {
+        "is-disabled": buttonDisabled.value,
+        "is-loading": props.loading,
+        "is-plain": props.plain,
+        "is-round": props.round,
+        "is-circle": props.circle
+      }
+    ]
     return () => (
       <button
-        {...attrs}
         disabled={buttonDisabled.value || props.loading}
         autofocus={props.autofocus}
         type={props.nativeType as "button"}
-        class={[
-          "el-button",
-          `el-button--${props.type}`,
-          buttonSize.value ? "el-button--" + buttonSize.value : "",
-          {
-            "is-disabled": buttonDisabled.value,
-            "is-loading": props.loading,
-            "is-plain": props.plain,
-            "is-round": props.round,
-            "is-circle": props.circle
-          }
-        ]}
-        {...attrs}
+        class={classList}
       >
         {props.loading && <i class="el-icon-loading"></i>}
         {props.icon && !props.loading && <i class={props.icon}></i>}

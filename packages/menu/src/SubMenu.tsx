@@ -261,6 +261,7 @@ const ElSubmenu = defineComponent({
         {isMenuPopup.value ? (
             opened.value ? (
               <ElPopper
+              transitionName="tb"
               name={menuTransitionName.value}
               placement={currentPlacement.value}>
                 <div

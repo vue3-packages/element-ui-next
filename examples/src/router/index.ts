@@ -71,6 +71,24 @@ const routes: RouteRecordRaw[] = [
             component: (): Component => Empty,
             children: [
               {
+                path: "/layout",
+                name: "layout",
+                meta: {
+                  title: "Layout 布局",
+                  key: "layout",
+                },
+                component: (): Component => import("/@docs/layout/__docs__/layout.md"),
+              },
+              {
+                path: "/container",
+                name: "container",
+                meta: {
+                  title: "Container 布局容器",
+                  key: "container",
+                },
+                component: (): Component => import("/@docs/container/__docs__/container.md"),
+              },
+              {
                 path: "/button",
                 name: "button",
                 meta: {
@@ -136,6 +154,26 @@ const routes: RouteRecordRaw[] = [
                   key: "navMenu",
                 },
                 component: (): Component => import("/@docs/menu/__docs__/menu.md"),
+              },
+            ],
+          },
+          {
+            path: "/others",
+            name: "others",
+            meta: {
+              title: "Others",
+              key: "others",
+            },
+            component: (): Component => Empty,
+            children: [
+              {
+                path: "/card",
+                name: "card",
+                meta: {
+                  title: "Card 卡片",
+                  key: "card",
+                },
+                component: (): Component => import("/@docs/card/__docs__/card.md"),
               },
             ],
           },

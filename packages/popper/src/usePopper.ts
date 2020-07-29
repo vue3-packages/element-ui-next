@@ -41,7 +41,8 @@ export function usePopper(
 ) {
   const { placement = "bottom", modifiers = [], strategy = "absolute" } = popperOptions || {};
   const id = uniqueId("el-popper");
-  const popperEl = createEl(id, normalizeClass(["el-popper", popperClass]));
+  const baseClass = normalizeClass(["el-popper", popperClass]);
+  let popperEl = createEl(id, baseClass);
   const popper = ref<Popper>();
   const referenceEl: HTMLElement | null = null;
 
@@ -52,12 +53,21 @@ export function usePopper(
     if (popper.value) {
       popper.value.destroy();
     }
+    const container = document.querySelectorAll(`#${id}`);
+    for (let i = 0; i < container.length; i++) {
+      if (container[i].className === baseClass) {
+        removeEl(container[i]);
+      }
+    }
+    popperDom.className = `${popperDom.className} ${baseClass}`;
+    popperDom.id = id;
+    document.body.append(popperDom);
+    popperEl = popperDom;
     popper.value = createPopper(el, popperDom as HTMLElement, {
       placement,
       modifiers,
       strategy,
     });
-    popperEl.append(popperDom);
   };
 
   const state = reactive({

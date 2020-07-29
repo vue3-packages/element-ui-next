@@ -97,3 +97,64 @@
 .el-opacity-transition {
   transition: opacity .3s cubic-bezier(.55,0,.1,1);
 }
+
+// DIY
+.tb-enter {
+  display: none;
+}
+.tb-enter-active {
+  display: none;
+}
+.tb-enter-to {
+  & > ul {
+    animation: tbShow .3s forwards cubic-bezier(0,.98,.37,.99);
+    overflow: hidden;
+  }
+  display: block;
+}
+.tb-leave {
+  & > ul {
+    animation: tbShow-r .3s forwards cubic-bezier(1,.19,.94,.68);
+    overflow: hidden;
+  }
+  display: block;
+}
+.tb-leave-active {
+
+}
+.tb-leave-to {
+
+}
+@keyframes tbShow {
+  0% {
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  30% {
+    opacity: 0;
+  }
+  90% {
+    pointer-events: all;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes tbShow-r {
+  100% {
+    transform: translateY(-110%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  90% {
+    opacity: 0;
+  }
+  30% {
+  }
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

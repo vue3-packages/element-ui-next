@@ -1,4 +1,4 @@
-import {defineComponent, ref} from "vue"
+import {defineComponent, ref, onMounted} from "vue"
 import {ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup, ElButton} from "../../../../packages/index"
 import "./cAside.scss"
 import {routes} from "../../router/index"
@@ -15,7 +15,7 @@ const CAside = defineComponent({
         name: key
       })
     }
-  const renderMenus = (routes: RouteRecordRaw[]) => {
+    const renderMenus = (routes: RouteRecordRaw[]) => {
       const menus = routes.filter(item => item.meta).map((item: RouteRecordRaw) => {
         if (item.meta.type === "menuGroup") {
           return (

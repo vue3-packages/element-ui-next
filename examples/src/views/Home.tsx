@@ -12,18 +12,18 @@ export default defineComponent({
   setup() {
     return () => (
       <ElContainer class="element-ui-next">
-        <ElHeader height="80px">
+        <ElHeader class="element-ui-next-h" height="80px">
           <CHeader/>
         </ElHeader>
-        <ElContainer>
-          <ElAside width="300px">
+        <ElContainer class="element-ui-next-c">
+          <ElAside class="element-ui-next-a" width="300px">
             <CAside/>
           </ElAside>
-          <ElMain class="main-doc">
+          <ElMain class="main-doc element-ui-next-m">
             <RouterView></RouterView>
           </ElMain>
         </ElContainer>
-        <ElFooter height="40px"/>
+        <ElFooter class="element-ui-next-f" height="40px"/>
       </ElContainer>
     );
   }
