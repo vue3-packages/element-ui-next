@@ -1,19 +1,81 @@
-import { defineComponent, onMounted, getCurrentInstance, Teleport, PropType, reactive, watch, watchEffect } from "vue"
-
+import { defineComponent, onMounted, getCurrentInstance, Teleport, PropType, reactive, watch, watchEffect, onBeforeUnmount, nextTick } from "vue"
 import { usePopper, Placement } from "./usePopper"
 import useClickAway from "../../../src/hooks/useClickAway"
+import { addClass, removeClass } from "../../../src/utils/dom"
+
+class PopperTransitionOpt {
+  name = ""
+  el: HTMLElement = document.createElement("div")
+  constructor (name: string) {
+    this.name = name
+  }
+
+  setEl (el: HTMLElement) {
+    this.el = el
+  }
+
+  onBeforeEnter() {
+    return new Promise(resolve => {
+      addClass(this.el, `${this.name}-enter`)
+      resolve(this)
+    })
+  }
+
+  onEnter() {
+    return new Promise(resolve => {
+      removeClass(this.el, `${this.name}-enter`)
+      addClass(this.el, `${this.name}-enter-active`)
+      resolve(this)
+    })
+  }
+
+  onAfterEnter() {
+    return new Promise(resolve => {
+      removeClass(this.el, `${this.name}-enter-active`)
+      addClass(this.el, `${this.name}-enter-to`)
+      resolve(this)
+    })
+  }
+
+  onBeforeLeave() {
+    return new Promise(resolve => {
+      removeClass(this.el, `${this.name}-enter-to`)
+      addClass(this.el, `${this.name}-leave`)
+      resolve(this)
+    })
+  }
+
+  onLeave() {
+    return new Promise(resolve => {
+      removeClass(this.el, `${this.name}-leave`)
+      addClass(this.el, `${this.name}-leave-active`)
+      resolve(this)
+    })
+  }
+
+  onAfterLeave() {
+    return new Promise(resolve => {
+      removeClass(this.el, `${this.name}-leave-active`)
+      addClass(this.el, `${this.name}-leave-to`)
+      resolve(this)
+    })
+  }
+}
 
 const PopperInner = defineComponent({
   props: {
     setRootEl: {
       type: Function as PropType<(el: HTMLElement | null, popperEl: HTMLElement | null) => void>,
       required: true
+    },
+    name: {
+      type: String
     }
   },
-  setup({ setRootEl }, { slots }) {
+  setup({ setRootEl, name }, { slots }) {
+    let transitionObj: PopperTransitionOpt = new PopperTransitionOpt(name || "")
     onMounted(() => {
       const instance = getCurrentInstance()
-      // let node = instance!.vnode.popperEl
       let popperEl = instance!.vnode.el
       while (popperEl && !popperEl.tagName) {
         popperEl = popperEl.nextSibling
@@ -22,7 +84,21 @@ const PopperInner = defineComponent({
       while (el && !el.tagName) {
         el = el.previousElementSibling
       }
+      transitionObj.setEl(popperEl as HTMLElement)
+      transitionObj.onBeforeEnter()
+      .then(obj => {
+        return (obj as PopperTransitionOpt).onEnter()
+      }).then(obj => {
+        return (obj as PopperTransitionOpt).onAfterEnter()
+      })
       setRootEl(el as HTMLElement | null, popperEl as HTMLElement | null)
+    })
+    onBeforeUnmount(() => {
+      transitionObj.onBeforeLeave().then(obj => {
+        return (obj as PopperTransitionOpt).onLeave()
+      }).then(obj => {
+        return (obj as PopperTransitionOpt).onAfterLeave()
+      })
     })
     return () => (slots.default ? slots.default() : <span></span>)
   }
@@ -52,6 +128,12 @@ const Popper = defineComponent({
     strategy: {
       type: String as PropType<"absolute" | "fixed">,
       default: "bottom"
+    },
+    name: {
+      type: String
+    },
+    transitionName: {
+      type: String
     }
   },
   setup(props, { attrs, slots, emit }) {
@@ -116,7 +198,9 @@ const Popper = defineComponent({
       return (
         <>
           <Teleport to={`#${popperEl.id}`}>{slots.popper?.()}</Teleport>
-          <PopperInner setRootEl={setRootEl}>{slots.default?.()}</PopperInner>
+          <PopperInner name={props.transitionName} setRootEl={setRootEl}>
+            {slots.default?.()}
+          </PopperInner>
         </>
       )
     }

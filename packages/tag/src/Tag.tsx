@@ -1,7 +1,7 @@
 import {defineComponent,PropType,Transition} from "vue"
 
-const ELTag = defineComponent({
-    name: "ELTag",
+const ElTag = defineComponent({
+    name: "ElTag",
     props: {
         text: String,
         closable: Boolean,
@@ -19,13 +19,15 @@ const ELTag = defineComponent({
         close: Function as PropType<(event:Event) => void>,
         click: Function as PropType<(event:Event) => void>,
       },
-    setup(props, { attrs, slots }){
+    setup(props, { attrs, slots, emit}){
         const handleClose = (event) => {
           event.stopPropagation();
           props.close?.(event)
+          emit("close",event)
         }
         const handleClick = (event) => {
           props.click?.(event)
+          emit("click",event)
         }
         const { type, size, hit, effect, color, closable} = props;
         const classes = [
@@ -51,4 +53,4 @@ const ELTag = defineComponent({
         );
     }
 })
-export default ELTag;
+export default ElTag;

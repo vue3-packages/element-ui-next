@@ -7,9 +7,15 @@ import ElFooter from "./footer/index";
 import ElHeader from "./header/index";
 import ElIcon from "./icon/index";
 import ElMain from "./main/index";
-import ELAvatar from "./avatar/index";
-import ELlink from "./link/index";
-import ELTag from "./tag/index"
+import ElAvatar from "./avatar/index";
+import Ellink from "./link/index";
+import ElTag from "./tag/index";
+import ElCard from "./card/index";
+import ElCol from "./col/index";
+import ElRow from "./row/index";
+import ElRate from "./rate/index";
+import ElBadge from "./badge/index";
+import ElAlert from "./alert/index";
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 
@@ -25,10 +31,16 @@ const components = [
   ElMenu,
   ElMenuItem,
   ElSubmenu,
-  ELAvatar,
+  ElAvatar,
   ElMenuItemGroup,
-  ELlink,
-  ELTag
+  Ellink,
+  ElTag,
+  ElCard,
+  ElCol,
+  ElRow,
+  ElRate,
+  ElBadge,
+  ElAlert,
 ];
 
 const install = function (Vue: App): void {
@@ -55,8 +67,14 @@ export {
   ElMenu,
   ElMenuItem,
   ElSubmenu,
-  ELAvatar,
+  ElAvatar,
   ElMenuItemGroup,
-  ELlink,
-  ELTag
+  Ellink,
+  ElTag,
+  ElCard,
+  ElCol,
+  ElRow,
+  ElRate,
+  ElBadge,
+  ElAlert,
 };

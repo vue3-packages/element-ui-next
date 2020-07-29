@@ -7,6 +7,7 @@ import {
   ComputedRef,
   Ref,
   VNodeTypes,
+  VNodeArrayChildren,
 } from "vue";
 
 type VNodeTypesN = VNodeTypes & { name: string };
@@ -107,8 +108,19 @@ function useMenu(): MenuHooks {
               };
             }
           }
-          if (item?.children && item?.children instanceof Array) {
-            initItems(item?.children, _indexPath);
+          if (item?.children) {
+            let children: VNodeArrayChildren = [];
+            if (item.children instanceof Array) {
+              children = item.children;
+              initItems(children, _indexPath);
+            } else if (item.children instanceof Object) {
+              const keys = Object.keys(item?.children);
+              for (const key of keys) {
+                if (key === "_") continue;
+                children = children.concat((item.children as any)[key]());
+              }
+              initItems(children, _indexPath);
+            }
           }
         }
       });

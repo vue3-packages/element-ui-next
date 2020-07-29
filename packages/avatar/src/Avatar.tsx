@@ -1,6 +1,6 @@
 import { computed, defineComponent, PropType, reactive } from "vue";
 
-const ELAvatar = defineComponent({
+const ElAvatar = defineComponent({
   name: "ElAvatar",
   props: {
     size: {
@@ -82,4 +82,4 @@ const ELAvatar = defineComponent({
   }
 })
 
-export default ELAvatar;
+export default ElAvatar;

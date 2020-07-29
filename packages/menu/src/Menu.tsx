@@ -1,4 +1,4 @@
-import {defineComponent, PropType, watch, onMounted, provide} from "vue";
+import {defineComponent, PropType, watch, onMounted, provide, getCurrentInstance} from "vue";
 import MenuCollapseTransition from "./MenuCollapseTransition"
 import { useMenu } from "./menuHooks";
 
@@ -39,9 +39,7 @@ const Menu = defineComponent({
       type: Function
     }
   },
-  setup(props, {slots}) {
-
-
+  setup(props, {slots, emit}) {
     let state = useMenu()
     const menuId = "menuConfig"
     provide(menuId, state)
@@ -55,6 +53,9 @@ const Menu = defineComponent({
         activeIndex: state.rootMenu.activeIndex || props.defaultActive
       })
       initOpenedMenu()
+      if (state.rootMenu.activeIndex) {
+        state.setActive(state.items[state.rootMenu.activeIndex])
+      }
     }
 
     const initEvents = () => {
@@ -121,6 +122,7 @@ const Menu = defineComponent({
       }
       state.setActive(item);
       props.select?.(index, indexPath, item)
+      emit("select", index, indexPath, item)
       if (props.mode === "horizontal" || props.collapse) {
         state.rootMenu.openedMenus = [];
       }
@@ -131,12 +133,24 @@ const Menu = defineComponent({
       if (isOpened) {
         closeMenu(index);
         props.close?.(index, indexPath);
+        emit("close", index, indexPath);
       } else {
         openMenu(index, indexPath);
         props.open?.(index, indexPath);
+        emit("open", index, indexPath);
       }
     }
-    
+
+    const open = (index) => {
+      const { indexPath } = state.submenus[index.toString()];
+      indexPath.forEach(i => openMenu(i, indexPath));
+    }
+    const close = (index) => {
+      closeMenu(index);
+    }
+    const instance = (getCurrentInstance() as any)
+    instance.close = close
+    instance.open = open
     const closeMenu = (index) => {
       for (let i = 0; i <= state.rootMenu.openedMenus.length - 1; i ++) {
         const menuIndex = state.rootMenu.openedMenus[i] as string
@@ -199,12 +213,12 @@ const Menu = defineComponent({
       state.eventBus.emit("toggle-collapse", value)
     })
 
-    const menuComponent = (
+    const menuComponent = () => ((
       <ul
         role="menubar"
         data-component="ElMenu"
         data-menuId={menuId}
-        key={ +(props.collapse || 0) }
+        // key={ +(props.collapse || 0) }
         style={{ backgroundColor: props.backgroundColor || "" }}
         class={{
           "el-menu--horizontal": props.mode === "horizontal",
@@ -214,12 +228,12 @@ const Menu = defineComponent({
       >
         { slots.default?.() }
       </ul>
-    )
+    ))
     return props.collapseTransition ? () => (
-      <MenuCollapseTransition>
-        {menuComponent}
+      <MenuCollapseTransition collapse={props.collapse}>
+        {menuComponent()}
       </MenuCollapseTransition>
-    ) : () => menuComponent
+    ) : () => menuComponent()
   }
 })
 
