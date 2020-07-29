@@ -16,7 +16,7 @@ const ElRate = defineComponent({
         },
         highThreshold: {
           type: Number,
-          default: 0
+          default: 4
         },
         max: {
           type: Number,
@@ -170,7 +170,8 @@ const ElRate = defineComponent({
           })
           .sort((a: any, b: any) => a - b);
         const matchedValue = map[matchedKeys[0]];
-        return isObject(matchedValue.value) ? matchedValue.value : (matchedValue || "");
+        console.log(matchedValue)
+        return isObject(matchedValue) ? matchedValue.value : (matchedValue || "");
       }
       const getMigratingConfig = () => {
         return {
