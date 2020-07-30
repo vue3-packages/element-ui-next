@@ -16,7 +16,7 @@ export default defineComponent({
           <CHeader/>
         </ElHeader>
         <ElContainer class="element-ui-next-c">
-          <ElAside class="element-ui-next-a" width="300px">
+          <ElAside class="element-ui-next-a" width="240px">
             <CAside/>
           </ElAside>
           <ElMain class="main-doc element-ui-next-m">

@@ -1,4 +1,4 @@
-import ElDivder from "./src/divder";
+import ElDivder from "./src/divider";
 import { App } from "vue";
 
 ElDivder.install = (app: App) => {

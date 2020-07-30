@@ -242,6 +242,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: (): Component => import("/@docs/card/__docs__/card.md"),
               },
+              {
+                path: "/divider",
+                name: "divider",
+                meta: {
+                  title: "Divider 分割线",
+                  key: "divider",
+                },
+                component: (): Component => import("/@docs/divider/__docs__/divider.md"),
+              },
             ],
           },
         ],

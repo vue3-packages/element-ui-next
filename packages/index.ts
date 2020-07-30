@@ -17,6 +17,7 @@ import ElRate from "./rate/index";
 import ElBadge from "./badge/index";
 import ElAlert from "./alert/index";
 import ElInput from "./input/index";
+import ElDivider from  "./divider/index"
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 
@@ -43,6 +44,7 @@ const components = [
   ElBadge,
   ElAlert,
   ElInput,
+  ElDivider
 ];
 
 const install = function (Vue: App): void {
@@ -80,4 +82,5 @@ export {
   ElBadge,
   ElAlert,
   ElInput,
+  ElDivider
 };
