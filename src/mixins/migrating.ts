@@ -1,28 +1,31 @@
 import { kebabCase } from "../../src/utils/util";
-import { onMounted, getCurrentInstance, onUnmounted, Ref} from "vue";
+import { onMounted, getCurrentInstance, onUnmounted, Ref } from "vue";
 
-function migrating(): {
-} {
+function migrating(): {} {
   onMounted(() => {
     if (process.env.NODE_ENV === "production") return;
-    const componentInternalInstance = getCurrentInstance()
+    const componentInternalInstance = getCurrentInstance();
     if (componentInternalInstance && !componentInternalInstance.vnode) return;
     const { props = {}, events = {} } = getMigratingConfig();
-    const { data, componentOptions } = componentInternalInstance.vnode;
+    const { data, componentOptions } = componentInternalInstance?.vnode;
     const definedProps = data.attrs || {};
     const definedEvents = componentOptions.listeners || {};
 
     for (let propName in definedProps) {
       propName = kebabCase(propName); // compatible with camel case
       if (props[propName]) {
-        console.warn(`[Element Migrating][${componentInternalInstance.options.name}][Attribute]: ${props[propName]}`);
+        console.warn(
+          `[Element Migrating][${componentInternalInstance.options.name}][Attribute]: ${props[propName]}`,
+        );
       }
     }
 
     for (let eventName in definedEvents) {
       eventName = kebabCase(eventName); // compatible with camel case
       if (events[eventName]) {
-        console.warn(`[Element Migrating][${componentInternalInstance.options.name}][Event]: ${events[eventName]}`);
+        console.warn(
+          `[Element Migrating][${componentInternalInstance.options.name}][Event]: ${events[eventName]}`,
+        );
       }
     }
   });
@@ -31,9 +34,8 @@ function migrating(): {
       props: {},
       events: {},
     };
-  }
-  return {
   };
+  return {};
 }
 
 export default migrating;
