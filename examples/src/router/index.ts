@@ -251,6 +251,15 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: (): Component => import("/@docs/divider/__docs__/divider.md"),
               },
+              {
+                path: "/timeline",
+                name: "timeline",
+                meta: {
+                  title: "Timeline 时间线",
+                  key: "timeline",
+                },
+                component: (): Component => import("/@docs/timeline/__docs__/timeline.md"),
+              },
             ],
           },
         ],
