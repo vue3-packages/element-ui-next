@@ -21,6 +21,8 @@ import ElDivider from  "./divider/index"
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
 import { ElTimeline, ElTimelineItem} from "./timeline/index";
+import { ElSteps, ElStep} from "./steps/index";
+
 
 const components = [
   ElButton,
@@ -47,7 +49,9 @@ const components = [
   ElInput,
   ElDivider,
   ElTimeline,
-  ElTimelineItem
+  ElTimelineItem,
+  ElStep,
+  ElSteps
 ];
 
 const install = function (Vue: App): void {
@@ -87,5 +91,7 @@ export {
   ElInput,
   ElDivider,
   ElTimeline,
-  ElTimelineItem
+  ElTimelineItem,
+  ElSteps,
+  ElStep
 };

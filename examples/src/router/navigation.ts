@@ -22,5 +22,14 @@ export default {
       },
       component: (): Component => import("/@docs/menu/__docs__/menu.md"),
     },
+    {
+      path: "/steps",
+      name: "steps",
+      meta: {
+        title: "Steps 步骤条",
+        key: "steps"
+      },
+      component: (): Component => import("/@docs/steps/__docs__/steps.md"),
+    },
   ],
 }
