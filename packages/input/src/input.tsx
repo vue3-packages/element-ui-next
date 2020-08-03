@@ -1,13 +1,14 @@
-import {defineComponent, inject, ref, computed, nextTick} from "vue"
+import {defineComponent, inject, ref, computed, nextTick, watch, onMounted, getCurrentInstance} from "vue"
 import {IEventBus} from "../../../src/tools/eventBus"
 import {isKorean} from "../../../src/utils/shared"
 import {prevent} from "../../../src/utils/dom"
 import merge from "../../../src/utils/merge"
+import calcTextareaHeight from "./calcTextareaHeight";
 
 export default defineComponent({
   name: "ElInput",
   props: {
-    value: [String, Number],
+    modelValue: [String, Number],
     size: String,
     resize: String,
     form: String,
@@ -51,6 +52,7 @@ export default defineComponent({
   },
   setup (props, {slots, attrs, emit}) {
     const eventBus = inject("formEventBus") as IEventBus
+    const instance = getCurrentInstance()
 
     const elForm = inject("form") as any
     const elFormItem = inject("formItem") as any
@@ -60,6 +62,72 @@ export default defineComponent({
     const passwordVisible = ref(false)
     const hovering = ref(false)
     const isComposing = ref(false)
+
+    const select = () => {
+      getInput().select();
+    }
+    eventBus?.on("inputSelect", select);
+    const textareaCalcStyle = ref({})
+    const resizeTextarea = () => {
+      if (!document) return;
+      const { autosize, type } = props;
+      if (type !== "textarea") return;
+      if (!autosize) {
+        textareaCalcStyle.value = {
+          minHeight: calcTextareaHeight(textarea.value).minHeight
+        };
+        return;
+      }
+      const minRows = autosize.minRows;
+      const maxRows = autosize.maxRows;
+
+      textareaCalcStyle.value = calcTextareaHeight(textarea.value, minRows, maxRows);
+    }
+    onMounted(() => {
+      setNativeInputValue();
+      resizeTextarea();
+      updateIconOffset();
+    })
+    
+    watch(() => props.modelValue, (val) => {
+      nextTick(resizeTextarea)
+      eventBus?.emit("ElFormItem_el.form.change", [val])
+    })
+    const calcIconOffset = (place) => {
+      const $el = instance?.vnode.el as HTMLElement
+      let elList = [].slice.call($el.querySelectorAll(`.el-input__${place}`) || []) as HTMLElement[];
+      if (!elList.length) return;
+      let el: HTMLElement = null as unknown as HTMLElement;
+      for (let i = 0; i < elList.length; i++) {
+        if (elList[i].parentNode === $el) {
+          el = elList[i];
+          break;
+        }
+      }
+      if (!el) return;
+      const pendantMap = {
+        suffix: "append",
+        prefix: "prepend"
+      };
+
+      const pendant = pendantMap[place];
+      if (slots[pendant]) {
+        el.style.transform = `translateX(${place === "suffix" ? "-" : ""}${($el.querySelector(`.el-input-group__${pendant}`) as HTMLElement).offsetWidth}px)`;
+      } else {
+        el.removeAttribute("style");
+      }
+    }
+    const updateIconOffset = () => {
+      calcIconOffset("prefix");
+      calcIconOffset("suffix");
+    }
+    watch(() => props.type, () => {
+      nextTick(() => {
+        setNativeInputValue();
+        resizeTextarea();
+        updateIconOffset();
+      });
+    })
 
     const inputDisabled = computed(() => {
       return props.disabled || elForm?.disabled;
@@ -79,8 +147,11 @@ export default defineComponent({
         handleInput(event);
       }
     }
+    watch(() => nativeInputValue, () => {
+      setNativeInputValue()
+    })
     const nativeInputValue = computed(() => {
-      return props.value === null || props.value === undefined ? "" : String(props.value);
+      return props.modelValue === null || props.modelValue === undefined ? "" : String(props.modelValue);
     })
     const setNativeInputValue = () => {
       const input = getInput();
@@ -100,6 +171,7 @@ export default defineComponent({
       // hack for https://github.com/ElemeFE/element/issues/8548
       // should remove the following line when we don't support IE
       if (event.target.value === nativeInputValue.value) return;
+      (attrs as any)["onUpdate:modelValue"](event.target.value)
       emit("input", event.target.value);
 
       // ensure native input value is controlled
@@ -117,7 +189,7 @@ export default defineComponent({
       focused.value = false;
       emit("blur", event);
       if (props.validateEvent) {
-        eventBus.emit("ElFormItem_el.form.blur", [props.value])
+        eventBus?.emit("ElFormItem_el.form.blur", [props.modelValue])
       }
     }
 
@@ -164,6 +236,7 @@ export default defineComponent({
 
     
     const clear = () => {
+      (attrs as any)["onUpdate:modelValue"]("")
       emit("input", "");
       emit("change", "");
       emit("clear");
@@ -179,11 +252,11 @@ export default defineComponent({
     }
 
     const textLength = computed(() => {
-      if (typeof props.value === "number") {
-        return String(props.value).length;
+      if (typeof props.modelValue === "number") {
+        return String(props.modelValue).length;
       }
 
-      return (props.value || "").length;
+      return (props.modelValue as string || "").length;
     })
 
     const upperLimit = computed(() => {
@@ -210,9 +283,10 @@ export default defineComponent({
             ): ""
           }
           <input
+            {...attrs}
+            value={props.modelValue as string}
             tabindex={props.tabindex as unknown as number}
             class="el-input__inner"
-            {...attrs}
             type={props.showPassword ? (passwordVisible.value ? "text": "password") : props.type}
             disabled={inputDisabled.value}
             readonly={props.readonly}
@@ -231,7 +305,7 @@ export default defineComponent({
           {
             slots.prefix || props.prefixIcon ? (
               <span class="el-input__prefix">
-                slots.prefix?.()
+                {slots.prefix?.()}
                 {
                   props.prefixIcon ? (
                     <i class={[
@@ -310,7 +384,6 @@ export default defineComponent({
       )
     }
 
-    const textareaCalcStyle = ref({})
     const textareaStyle = computed(() => {
       return merge({}, textareaCalcStyle.value, { resize: props.resize });
     })
@@ -318,6 +391,7 @@ export default defineComponent({
       return (
         <textarea
           {...attrs}
+          value={props.modelValue as string}
           tabindex={props.tabindex as unknown as number}
           class="el-textarea__inner"
           onCompositionstart={handleCompositionStart}
