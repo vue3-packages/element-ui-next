@@ -1,4 +1,4 @@
-import { defineComponent, inject } from "vue";
+import { defineComponent } from "vue";
 
 const ElTimelineItem = defineComponent({
   name: "ElTimelineItem",
@@ -26,7 +26,7 @@ const ElTimelineItem = defineComponent({
     icon: String
   },
   setup(props, {slots}) {
-    const state = inject("timeline");
+    // const state = inject("timeline");
     return () => (
       <li class="el-timeline-item">
         <div class="el-timeline-item__tail"></div>

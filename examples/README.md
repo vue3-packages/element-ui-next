@@ -107,7 +107,7 @@ module.exports = {
 到这一步，一个Vue3+TSX的项目就搭建起来了，以上配置文件的具体内容就不做解释了。
 
 ### 修改入口文件
-因为默认项目模板是以`src/main.js`为入口的，我们需要把它修改为`src/main.ts`。  
+因为默认项目模板是以`src/tooltip.tsx`为入口的，我们需要把它修改为`src/main.ts`。  
 在`根目录的index.html`中修改入口文件的引用即可：
 ```html
 ... ...
