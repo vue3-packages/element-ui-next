@@ -33,8 +33,8 @@ const ElTimelineItem = defineComponent({
 
         {!slots.dot ? <div
              class={["el-timeline-item__node",
-               `el-timeline-item__node--${props.size || ''}`,
-               `el-timeline-item__node--${props.type || ''}`
+               `el-timeline-item__node--${props.size || ""}`,
+               `el-timeline-item__node--${props.type || ""}`
              ]}
               style={{backgroundColor: props.color}}>
           {props.icon ? <i class={["el-timeline-item__icon",props.icon]}></i> : ""}
@@ -45,7 +45,7 @@ const ElTimelineItem = defineComponent({
         </div> : ""}
 
         <div class="el-timeline-item__wrapper">
-          {!props.hideTimestamp &&props.placement === 'top' ?
+          {!props.hideTimestamp &&props.placement === "top" ?
             <div class="el-timeline-item__timestamp is-top">
             {props.timestamp}
           </div> : ""}
@@ -54,7 +54,7 @@ const ElTimelineItem = defineComponent({
             {slots.default?.()}
           </div>
 
-          {!props.hideTimestamp && props.placement === 'bottom' ?
+          {!props.hideTimestamp && props.placement === "bottom" ?
             <div class="el-timeline-item__timestamp is-bottom">
             {props.timestamp}
           </div> : ""}

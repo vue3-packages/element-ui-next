@@ -1,5 +1,4 @@
-import { defineComponent, reactive, computed, watch } from "vue";
-
+import { defineComponent, reactive, watch } from "vue";
 const ElSteps = defineComponent({
   name: "ElSteps",
     props: {
@@ -7,35 +6,43 @@ const ElSteps = defineComponent({
     active: Number,
     direction: {
       type: String,
-      default: 'horizontal'
+      default: "horizontal"
     },
     alignCenter: Boolean,
     simple: Boolean,
     finishStatus: {
       type: String,
-      default: 'finish'
+      default: "finish"
     },
     processStatus: {
       type: String,
-      default: 'process'
+      default: "process"
+    },
+    steps: {
+      type: Array,
+      default: [],
+    },
+    stepOffset: {
+      type: Number,
+      default: 0
     }
   },
   setup(props, {emit,slots}){
-    const state = reactive({
-      steps: [],
-      stepOffset: 0
-    })
+    // const state = reactive({
+    //   steps: [],
+    //   stepOffset: 0
+    // })
     const getMigratingConfig = () => {
       return {
         props: {
-          'center': 'center is removed.'
+          "center": "center is removed."
         }
       };
     }
     watch(() => props.active, (newVal, oldVal) => {
-      emit('change', newVal, oldVal);
+      emit("change", newVal, oldVal);
     })
-    watch(() => state.steps, (steps) => {
+    watch(() => props.steps, (steps) => {
       steps.forEach((child, index) => {
         // @ts-ignore
         child.index = index;
@@ -43,8 +50,8 @@ const ElSteps = defineComponent({
     })
     return () => (
       <div
-        class={["el-steps",!props.simple && 'el-steps--' + props.direction,
-          props.simple && 'el-steps--simple']}>
+        class={["el-steps",!props.simple && "el-steps--" + props.direction,
+          props.simple && "el-steps--simple"]}>
         {slots.default?.()}
       </div>
     )

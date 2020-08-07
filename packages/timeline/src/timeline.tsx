@@ -15,7 +15,7 @@ const ElTimeline = defineComponent({
     //     timeline: this
     //   }
     // }
-    provide('timeline', timeline);
+    provide("timeline", timeline);
     const reverse = props.reverse;
     const classes = {
       "el-timeline": true,
