@@ -14,4 +14,4 @@ const timelineInstall: Plugin = {
 
 export default timelineInstall;
 
-export { ElTimeline, ElTimelineItem};
+export { ElTimeline, ElTimelineItem };

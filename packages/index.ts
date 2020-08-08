@@ -17,12 +17,13 @@ import ElRate from "./rate/index";
 import ElBadge from "./badge/index";
 import ElAlert from "./alert/index";
 import ElInput from "./input/index";
-import ElDivider from  "./divider/index"
+import ElDivider from "./divider/index";
+import ElPageHeader from "./page-header/index";
 
 import { ElMenu, ElMenuItem, ElSubmenu, ElMenuItemGroup } from "./menu/index";
-import { ElTimeline, ElTimelineItem} from "./timeline/index";
-import { ElSteps, ElStep} from "./steps/index";
-
+import { ElTimeline, ElTimelineItem } from "./timeline/index";
+import { ElSteps, ElStep } from "./steps/index";
+import { ElBreadcrumb, ElBreadcrumbItem } from "./breadcrumb/index";
 
 const components = [
   ElButton,
@@ -51,7 +52,10 @@ const components = [
   ElTimeline,
   ElTimelineItem,
   ElStep,
-  ElSteps
+  ElSteps,
+  ElPageHeader,
+  ElBreadcrumb,
+  ElBreadcrumbItem,
 ];
 
 const install = function (Vue: App): void {
@@ -93,5 +97,8 @@ export {
   ElTimeline,
   ElTimelineItem,
   ElSteps,
-  ElStep
+  ElStep,
+  ElPageHeader,
+  ElBreadcrumb,
+  ElBreadcrumbItem,
 };

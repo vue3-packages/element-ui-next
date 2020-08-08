@@ -66,7 +66,7 @@ const ElAlert = defineComponent({
       {prpos.showIcon ? <i class={[ iconClass.value, isBigIcon.value,"el-alert__icon" ]}></i> : ""}
       <div class="el-alert__content">
         {prpos.title || slots.title ? <span class={[isBoldTitle.value, "el-alert__title"]}>
-          <slot name="title">{prpos.title}</slot>
+          {slots.title ? slots.title() : prpos.title}
         </span> : ""}
         {slots.default && !prpos.description ? <p class="el-alert__description">{slots.default?.()}</p> : ""}
         {prpos.description && !slots.default ? <p class="el-alert__description">{ prpos.description }</p> : ""}

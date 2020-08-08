@@ -2,11 +2,11 @@ import { RouteRecordRaw, createRouter, createWebHistory } from "vue-router";
 import { Component } from "vue";
 
 const Empty = import("../components/empty/index");
-import basic from "./basic"
-import form from "./form"
-import data from "./data"
-import notice from "./notice"
-import navigation from "./navigation"
+import basic from "./basic";
+import form from "./form";
+import data from "./data";
+import notice from "./notice";
+import navigation from "./navigation";
 import others from "./others";
 
 const routes: RouteRecordRaw[] = [
@@ -66,14 +66,7 @@ const routes: RouteRecordRaw[] = [
           type: "menuGroup",
         },
         component: (): Component => Empty,
-        children: [
-          basic,
-          form,
-          data,
-          notice,
-          navigation,
-          others
-        ],
+        children: [basic, form, data, notice, navigation, others],
       },
     ],
   },

@@ -6,27 +6,32 @@ const ElStep = defineComponent({
     title: String,
     icon: String,
     description: String,
-    status: String
+    status: String,
+    // index: {
+    //   type: Number,
+    //   default: -1
+    // }
   },
   setup(props,{slots}){
     const instance = getCurrentInstance()
     const parent = instance?.parent
     // @ts-ignore
     // parent.steps.push(instance)
+    // console.log(instance)
     const {ctx} = parent
     ctx.steps.push(instance)
     onBeforeUnmount (() => {
 
       const steps = ctx.steps;
-      const index = steps.indexOf(this);
+      const index = steps.indexOf(instance);
       if (index >= 0) {
         steps.splice(index, 1);
       }
     })
     onMounted(() =>{
-      const unwatch = instance?.ctx.$watch("index", val => {
-        instance?.ctx.$watch("parent.ctx.active", updateStatus, { immediate: true });
-        instance.ctx.$watch("parent.ctx.processStatus", () => {
+      const unwatch = instance?.ctx.$watch("state.index", val => {
+        instance.ctx.$watch("ctx.active", updateStatus, { immediate: true });
+        instance.ctx.$watch("ctx.processStatus", () => {
           const activeIndex = ctx.active;
           updateStatus(activeIndex);
         }, { immediate: true });
@@ -89,6 +94,7 @@ const ElStep = defineComponent({
     })
     const updateStatus = (val) => {
       const prevChild = parent.subTree.children[state.index - 1];
+      console.log(val)
       if (val > state.index) {
         state.internalStatus = ctx.finishStatus;
       } else if (val === state.index && prevStatus.value !== "error") {
@@ -144,7 +150,7 @@ const ElStep = defineComponent({
           {
             currentStatus.value !== "success" && currentStatus.value !== "error" ? <slot name="icon">
               {props.icon ? <i class={["el-step__icon-inner", props.icon]}></i> : ""}
-                {!props.icon && !isSimple.value ? <div class="el-step__icon-inner">{ state.index +1 }</div> : ""}
+                {!props.icon && !isSimple.value ? <div class="el-step__icon-inner">{ state.index + 1 }</div> : ""}
             </slot> : <i class={[ `el-icon-${currentStatus.value === "success" ? "check" : "close"}`,
               "el-step__icon-inner is-status"]}></i>
           }
@@ -156,6 +162,7 @@ const ElStep = defineComponent({
             ref="title"
             class={["is-" + currentStatus.value,"el-step__title"]}>
             {slots.title?.()}
+            {props.title}
           </div>
           {isSimple.value ? <div class="el-step__arrow"></div>
            : <div

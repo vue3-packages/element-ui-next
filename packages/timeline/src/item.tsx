@@ -40,8 +40,7 @@ const ElTimelineItem = defineComponent({
           {props.icon ? <i class={["el-timeline-item__icon",props.icon]}></i> : ""}
         </div> : ""}
         {slots.dot ? <div class="el-timeline-item__dot">
-          <slot name="dot">
-            {slots.dot?.()}</slot>
+            {slots.dot?.()}
         </div> : ""}
 
         <div class="el-timeline-item__wrapper">
