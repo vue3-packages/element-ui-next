@@ -6,7 +6,7 @@ import { ElFormSymbol } from "../../provides";
 const ElRate = defineComponent({
     name: "ElRate",
     props: {
-        value: {
+      modelValue: {
           type: Number,
           default: 0
         },
@@ -74,17 +74,20 @@ const ElRate = defineComponent({
           type: String,
           default: "{value}"
         },
-        input:  Function,
         change: Function
     },
-    setup(props, {emit}){
-      if (!props.value) {
-        props.input?.(0)
+    // model: {
+    //   props: 'value',
+    //   event: 'input'
+    // },
+    setup(props, {attrs,emit}){
+      if (!props.modelValue) {
+        // props.input?.(0)
         emit("input",0)
       }
       const state = reactive({
         pointerAtLeftHalf: true,
-        currentValue: props.value,
+        currentValue: props.modelValue,
         hoverIndex: -1
       })
       const elForm = inject(ElFormSymbol, null)
@@ -95,12 +98,12 @@ const ElRate = defineComponent({
         let result: any
         if (props.showScore) {
           result = props.scoreTemplate.replace(/\{\s*value\s*\}/, rateDisabled.value
-             ? props.value.toString() : state.currentValue.toString());
+             ? props.modelValue.toString() : state.currentValue.toString());
           } else if (props.showText) {
             result = props.texts[Math.ceil(state.currentValue) - 1];
           }
           return result;
-        
+
       })
       const decimalStyle = computed(() => {
         let width = "";
@@ -115,7 +118,7 @@ const ElRate = defineComponent({
         };
       })
       const valueDecimal = computed(() => {
-        return props.value * 100 - Math.floor(props.value) * 100;
+        return props.modelValue * 100 - Math.floor(props.modelValue) * 100;
       })
       const classMap = computed(() => {
         return Array.isArray(props.iconClasses)
@@ -126,7 +129,7 @@ const ElRate = defineComponent({
           } : props.iconClasses;
       })
       const decimalIconClass = computed(() => {
-        return getValueFromMap(props.value, classMap.value);
+        return getValueFromMap(props.modelValue, classMap.value);
       })
       const voidClass = computed(() => {
         return rateDisabled.value ? props.disabledVoidIconClass : props.voidIconClass;
@@ -170,7 +173,6 @@ const ElRate = defineComponent({
           })
           .sort((a: any, b: any) => a - b);
         const matchedValue = map[matchedKeys[0]];
-        console.log(matchedValue)
         return isObject(matchedValue) ? matchedValue.value : (matchedValue || "");
       }
       const getMigratingConfig = () => {
@@ -181,7 +183,7 @@ const ElRate = defineComponent({
         };
       }
       const showDecimalIcon = (item) => {
-        let showWhenDisabled = rateDisabled.value && valueDecimal.value > 0 && item - 1 < props.value && item > props.value;
+        let showWhenDisabled = rateDisabled.value && valueDecimal.value > 0 && item - 1 < props.modelValue && item > props.modelValue;
         /* istanbul ignore next */
         let showWhenAllowHalf = props.allowHalf &&
         state.pointerAtLeftHalf &&
@@ -202,15 +204,15 @@ const ElRate = defineComponent({
         }
         if (props.allowHalf && state.pointerAtLeftHalf) {
           // tslint:disable-next-line:no-unused-expression
-          props.input?.(state.currentValue)
+          (attrs as any)["onUpdate:modelValue"](state.currentValue)
           emit("input",state.currentValue)
           // tslint:disable-next-line:no-unused-expression
-          props.change?.(state.currentValue)
           emit("change",state.currentValue)
         } else {
-          props.input?.(value);
+          (attrs as any)["onUpdate:modelValue"](value)
+          // state.currentValue = value
+          // console.log(state.currentValue)
           emit("input",value)
-          props.change?.(value);
           emit("change",value)
         }
       }
@@ -241,9 +243,9 @@ const ElRate = defineComponent({
         currentValue = currentValue < 0 ? 0 : currentValue;
         currentValue = currentValue > props.max ? props.max : currentValue;
 
-        props.input?.(currentValue);
+        // @ts-ignore
         emit("input",currentValue)
-        props.change?.(currentValue);
+        (attrs as any)["onUpdate:modelValue"](currentValue)
         emit("change",currentValue)
       }
 
@@ -273,9 +275,9 @@ const ElRate = defineComponent({
           return;
         }
         if (props.allowHalf) {
-          state.pointerAtLeftHalf = props.value !== Math.floor(props.value);
+          state.pointerAtLeftHalf = props.modelValue !== Math.floor(props.modelValue);
         }
-        state.currentValue = props.value;
+        state.currentValue = props.modelValue;
         state.hoverIndex = -1;
       }
 
@@ -288,9 +290,10 @@ const ElRate = defineComponent({
        }
        return arr
       }
-      watch(() => props.value, (val) => {
-        state.currentValue = val;
-        state.pointerAtLeftHalf = props.value !== Math.floor(props.value);
+      watch(() => props.modelValue, (val) => {
+          state.currentValue = val;
+          state.pointerAtLeftHalf = props.modelValue !== Math.floor(props.modelValue);
+
       })
       return () => (
         <div
