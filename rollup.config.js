@@ -5,6 +5,7 @@ import Uglify from "rollup-plugin-uglify";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import typescript from "rollup-plugin-typescript2";
+import jsx from 'rollup-plugin-jsx'
 const uglify = Uglify.uglify;
 import merge from "lodash.merge";
 import pkg from "./package.json";
@@ -69,6 +70,7 @@ module.exports = merge(
         cacheRoot: path.resolve(__dirname, "node_modules/.rts2_cache"),
         exclude: ["**/__tests__", "test-dts"],
       }),
+      jsx( {factory: 'h'} ),
     ],
     treeshake: {
       moduleSideEffects: false,

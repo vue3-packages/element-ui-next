@@ -43,9 +43,9 @@ const components = [
   ElAlert,
 ];
 
-const install = function (Vue: App): void {
+const install = function (app: App): void {
   components.forEach((component) => {
-    Vue.component(component.name, component);
+    app.component(component.name, component);
   });
 };
 
