@@ -1,4 +1,4 @@
-{/* <template>
+<template>
   <label
     class="el-radio"
     :class="[
@@ -130,36 +130,4 @@
       }
     }
   };
-</script> */}
-import { defineComponent, reactive, computed } from "vue";
-
-const ElRadio = defineComponent({
-  name: "ElRadio",
-  props: {
-    modelValue: {},
-    label: {},
-    disabled: Boolean,
-    name: String,
-    border: Boolean,
-    size: String
-  },
-  setup(props, {emit}) {
-    const state = reactive({
-      focus: false
-    })
-     const isGroup = computed(() => {
-      let parent = this.$parent;
-      while (parent) {
-        if (parent.$options.componentName !== "ElRadioGroup") {
-          parent = parent.$parent;
-        } else {
-          this._radioGroup = parent;
-          return true;
-        }
-      }
-      return false;
-     })
-  }
-})
-
-export default ElRadio
+</script>

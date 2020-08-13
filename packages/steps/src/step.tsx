@@ -17,7 +17,7 @@ const ElStep = defineComponent({
     const parent = instance?.parent
     // @ts-ignore
     // parent.steps.push(instance)
-    // console.log(instance)
+    console.log(parent)
     const {ctx} = parent
     ctx.steps.push(instance)
     onBeforeUnmount (() => {
