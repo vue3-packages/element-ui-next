@@ -11,6 +11,7 @@ import ElementUiNext from "../../packages/index";
 import "./demo-styles/index.scss";
 import Icons from "./assets/icon.json";
 import "../src/style/fonts/style.css";
+import "../../packages/theme-chalk/src/index.scss";
 
 (window as any).icon = Icons;
 (window as any).Prism.plugins.NormalizeWhitespace.setDefaults({

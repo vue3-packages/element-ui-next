@@ -1,6 +1,4 @@
-import {defineComponent,PropType} from "vue"
-import CollapseTransition from "../../Transition/CollapseTransition"
-
+import {defineComponent,PropType, Transition} from "vue"
 
 const ElTag = defineComponent({
     name: "ElTag",
@@ -51,7 +49,7 @@ const ElTag = defineComponent({
         </span>
         )
         return () => (
-            props.disableTransitions ? tagEl : <CollapseTransition name="el-zoom-in-center">{ tagEl }</CollapseTransition>
+            props.disableTransitions ? tagEl : <Transition name="el-zoom-in-center">{ tagEl }</Transition>
         );
     }
 })
