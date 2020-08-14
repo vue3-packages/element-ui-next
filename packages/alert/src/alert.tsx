@@ -1,4 +1,4 @@
-import {defineComponent, computed, PropType, reactive} from "vue"
+import {defineComponent, computed, PropType, reactive, Transition} from "vue"
 const ElAlert = defineComponent({
   name: "ElAlert",
   props: {
@@ -58,10 +58,10 @@ const ElAlert = defineComponent({
       return prpos.description || slots.default ? "is-bold" : "";
     })
     return () => (
-      // <transition name="el-alert-fade">
-      state.visible ? <div
+      <Transition name="el-alert-fade">
+      {state.visible ? <div
       class={[typeClass.value, prpos.center ? "is-center" : "", "is-" + prpos.effect, "el-alert"]}
-      v-show="visible"
+      // v-show={state.visible}
       role="alert">
       {prpos.showIcon ? <i class={[ iconClass.value, isBigIcon.value,"el-alert__icon" ]}></i> : ""}
       <div class="el-alert__content">
@@ -74,8 +74,7 @@ const ElAlert = defineComponent({
             "el-alert__closebtn"]} onClick={() => close()}>{prpos.closeText}</i> : ""
         }
       </div>
-    </div> : ""
-  // </transition>
+    </div> : ""}</Transition>
     )
   }
 })

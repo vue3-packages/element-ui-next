@@ -1,5 +1,6 @@
 import {defineComponent,PropType, Transition} from "vue"
 
+
 const ElTag = defineComponent({
     name: "ElTag",
     props: {
@@ -16,17 +17,13 @@ const ElTag = defineComponent({
         >,
         default: "light",
         },
-        close: Function as PropType<(event:Event) => void>,
-        click: Function as PropType<(event:Event) => void>,
       },
     setup(props, { attrs, slots, emit}){
         const handleClose = (event) => {
           event.stopPropagation();
-          props.close?.(event)
           emit("close",event)
         }
         const handleClick = (event) => {
-          props.click?.(event)
           emit("click",event)
         }
         const { type, size, hit, effect, color, closable} = props;
@@ -39,6 +36,7 @@ const ElTag = defineComponent({
       ];
       const tagEl = (
         <span
+          {...attrs}
           class={ classes }
           style={{ backgroundColor: color }}
           onClick={ handleClick }>
@@ -49,7 +47,7 @@ const ElTag = defineComponent({
         </span>
         )
         return () => (
-            props.disableTransitions ? tagEl : <Transition name="el-zoom-in-center">{ tagEl }</Transition>
+            props.disableTransitions ? tagEl : <Transition name="el-alert-fade">{ tagEl }</Transition>
         );
     }
 })
